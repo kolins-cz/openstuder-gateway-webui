@@ -1,0 +1,8 @@
+<svg width="156" height="156" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="var(--accent)">
+    <circle cx="50" cy="50" r="40" stroke="none" fill="rgb(var(--accent))"></circle>
+    <path d="M15 50 Q32.5 10 50 50 Q67.5 90 85 50" stroke="rgb(var(--background))" stroke-width="5" stroke-linecap="round" fill="none">
+        <animate attributeName="d" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1"
+                 values="M15 50 Q32.5 10 50 50 Q67.5 90 85 50;M15 50 Q32.5 90 50 50 Q67.5 10 85 50 ;M15 50 Q32.5 10 50 50 Q67.5 90 85 50"
+                 keySplines="0.5 0 0.5 1;0.5 0 0.5 1"></animate>
+    </path>
+</svg>

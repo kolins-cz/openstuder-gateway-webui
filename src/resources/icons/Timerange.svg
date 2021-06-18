@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="32" height="32" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"
+     style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-5054,-560)">
+        <g id="Timerange" transform="matrix(1.07986,0,0,1.07986,4343.66,-1181.96)">
+            <rect x="657.81" y="1613.14" width="237.069" height="237.069" style="fill:none;"/>
+            <g transform="matrix(11,0,0,11,-6581.81,-16134.9)">
+                <g transform="matrix(0.92605,0,0,0.92605,657.81,1613.14)">
+                    <path d="M11.99,2C6.47,2 2,6.48 2,12C2,17.52 6.47,22 11.99,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 11.99,2ZM12,20C7.58,20 4,16.42 4,12C4,7.58 7.58,4 12,4C16.42,4 20,7.58 20,12C20,16.42 16.42,20 12,20Z"
+                          style="fill:rgb(var(--background)); fill-rule:nonzero;"/>
+                </g>
+                <g transform="matrix(0.92605,0,0,0.92605,657.81,1613.14)">
+                    <path d="M12.5,7.545C12.5,7.401 12.443,7.262 12.34,7.16C12.238,7.057 12.099,7 11.955,7L11.545,7C11.401,7 11.262,7.057 11.16,7.16C11.057,7.262 11,7.401 11,7.545L11,13C11,13 14.502,15.101 15.786,15.871C16.043,16.026 16.376,15.944 16.532,15.688C16.591,15.591 16.653,15.489 16.713,15.391C16.788,15.267 16.811,15.117 16.776,14.976C16.741,14.834 16.651,14.713 16.525,14.638C15.369,13.952 12.5,12.25 12.5,12.25L12.5,7.545Z"
+                          style="fill:rgb(var(--background)); fill-rule:nonzero;"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

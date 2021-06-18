@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="40" height="40" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"
+     style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-4788,-560)">
+        <g id="Halted" transform="matrix(1.07986,0,0,1.07986,4077.66,-1181.96)">
+            <rect x="657.81" y="1613.14" width="237.069" height="237.069" style="fill:none;"/>
+            <g transform="matrix(1.11126,0,0,1.11126,-4686.61,966.879)">
+                <path d="M4940.87,628.227L4891.13,628.227L4856,663.36L4856,713.094L4891.13,748.227L4940.87,748.227L4976,713.094L4976,663.36L4940.87,628.227ZM4916,723.56C4911.2,723.56 4907.33,719.694 4907.33,714.894C4907.33,710.094 4911.2,706.227 4916,706.227C4920.8,706.227 4924.67,710.094 4924.67,714.894C4924.67,719.694 4920.8,723.56 4916,723.56ZM4922.67,694.894L4909.33,694.894L4909.33,654.894L4922.67,654.894L4922.67,694.894Z"
+                      style="fill:rgb(255,0,0);"/>
+            </g>
+        </g>
+    </g>
+</svg>

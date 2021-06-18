@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 256 257" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-1330,-2468)">
+    <g id="Logout" transform="matrix(1.07986,0,0,1.07986,619.66,726.265)">
+        <rect x="657.81" y="1613.14" width="237.069" height="237.069" style="fill: none"/>
+        <g transform="matrix(7.5,0,0,7.5,-4240.58,-10450.2)">
+            <g transform="matrix(0.92605,0,0,0.92605,657.81,1613.14)">
+                <rect x="0" y="0" width="24" height="24" style="fill: none; fillRule: nonzero"/>
+            </g>
+            <g transform="matrix(0.92605,0,0,0.92605,657.81,1613.14)">
+                <path d="M17,7L15.59,8.41L18.17,11L8,11L8,13L18.17,13L15.59,15.58L17,17L22,12L17,7ZM4,5L12,5L12,3L4,3C2.9,3 2,3.9 2,5L2,19C2,20.1 2.9,21 4,21L12,21L12,19L4,19L4,5Z"
+                      style="fill:rgb(var(--background)); fillRule: nonzero"/>
+            </g>
+        </g>
+    </g>
+</g>
+</svg>

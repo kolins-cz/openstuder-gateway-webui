@@ -1,0 +1,854 @@
+/*
+ * Reset CSS. (https://meyerweb.com/eric/tools/css/reset/)
+ */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: center;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+hr {
+    border: 1px solid var(--selected-overlay);
+}
+
+/*
+ * Global.
+ */
+
+:root {
+    --background: 245, 245, 245;
+    --foreground: 35, 35, 35;
+    --accent: 84, 156, 181;
+    --hover-overlay: rgba(255, 255, 255, 0.1);
+    --selected-overlay: rgba(0, 0, 0, 0.2);
+    --invalid-overlay: rgba(255, 0, 0, 0.1);
+}
+
+::selection {
+    background: rgb(var(--accent));
+}
+
+::-moz-selection {
+    background: rgb(var(--accent));
+}
+
+.hidden {
+    display: none;
+}
+
+:disabled {
+    opacity: 0.7;
+}
+
+body {
+    margin: 0;
+    text-align: center;
+    font-family: 'Avenir Next', 'Arial', 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: rgb(var(--foreground));
+    background-color: rgb(var(--background));
+    user-select: none;
+}
+
+button {
+    display: block;
+    margin: 8px auto;
+    padding: 8px;
+    outline: none;
+    border-radius: 6px;
+    color: rgb(var(--background));
+    font-size: 18px;
+    text-align: center;
+    border: 1px solid var(--hover-overlay);
+    background-color: rgb(var(--accent));
+}
+
+button:enabled:hover {
+    box-shadow: inset 100vw 0 var(--hover-overlay);
+}
+
+button.more {
+    font-style: italic;
+    font-size: 90%;
+    text-decoration: underline;
+    color: rgb(var(--foreground));
+    background-color: transparent;
+    opacity: 0.75;
+}
+
+button.more:hover {
+    opacity: 1;
+}
+
+/*
+ * Modal dialogs.
+ */
+
+div.modal {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    background-color: rgba(35, 35, 35, 0.9);
+}
+
+div.modal form {
+    padding: 48px;
+    border: 1px solid rgba(var(--foreground), 0.5);
+    border-radius: 24px;
+    background-color: rgb(var(--background));
+}
+
+div.modal form input,
+div.modal form select {
+    display: inline-block;
+    padding: 8px;
+    margin: 8px;
+    outline: none;
+    border-radius: 18px;
+    color: rgb(var(--foreground));
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid var(--selected-overlay);
+    background-color: rgba(127, 127, 127, 0.25);
+}
+
+div.modal form input:invalid {
+    box-shadow: inset 100vw 0 var(--invalid-overlay);
+}
+
+div.modal form label.switch {
+    margin: 8px;
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+div.modal form label.switch.small {
+    width: 30px;
+    height: 17px;
+}
+
+div.modal form label.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+div.modal form label.switch span.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid var(--selected-overlay);
+    background-color: rgba(127, 127, 127, 0.5);
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+div.modal form label.switch span.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: rgb(var(--background));
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+div.modal form label.switch.small span.slider:before {
+    height: 13px;
+    width: 13px;
+    left: 1px;
+    bottom: 1px;
+}
+
+div.modal form label.switch input:checked + span.slider {
+    background-color: rgb(var(--accent));
+}
+
+div.modal form label.switch input:focus + span.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+div.modal form label.switch input:checked + span.slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+div.modal form label.switch.small input:checked + span.slider:before {
+    -webkit-transform: translateX(13px);
+    -ms-transform: translateX(13px);
+    transform: translateX(13px);
+}
+
+div.modal form button {
+    display: inline-block;
+    margin: 16px 16px 0;
+    padding: 8px;
+    color: rgb(var(--background));
+    background-color: rgb(var(--accent));
+}
+
+div.modal form button:hover:enabled {
+    transform: none;
+}
+
+div.modal h1 {
+    margin-bottom: 16px;
+}
+
+div.modal form table tbody tr {
+    background-color: transparent !important;
+}
+
+/*
+ * Spinner.
+ */
+
+div.content div.spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    background-color: rgba(var(--background), 0.8);
+}
+
+/*
+ * Login component.
+ */
+
+div.login {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div.login img {
+    width: 320px;
+    margin-bottom: 32px;
+}
+
+div.login div.box {
+    padding: 48px;
+    border: 1px solid rgba(var(--foreground), 0.25);
+    border-radius: 24px;
+    background-color: rgb(var(--accent));
+}
+
+div.login label {
+    display: block;
+    font-size: 13px;
+    color: rgb(var(--background));
+}
+
+div.login input,
+div.login button {
+    min-width: 300px;
+    display: block;
+    padding: 8px;
+    outline: none;
+    border-radius: 18px;
+    color: rgb(var(--background));
+    font-size: 18px;
+    text-align: center;
+    border: 1px solid var(--selected-overlay);
+    background-color: var(--selected-overlay);
+}
+
+div.login input {
+    margin-bottom: 12px;
+}
+
+div.login input::placeholder {
+    color: var(--selected-overlay);
+}
+
+div.login button {
+    margin-top: 24px;
+    width: 100%;
+    color: rgb(var(--background));
+    background-color: rgb(var(--foreground));
+}
+
+.shake {
+    animation: shake 0.5s linear;
+}
+
+@keyframes shake {
+    from, to {
+        transform: translate3d(0, 0, 0);
+    }
+
+    10%, 30%, 50%, 70%, 90% {
+        transform: translate3d(-10px, 0, 0);
+    }
+
+    20%, 40%, 60%, 80% {
+        transform: translate3d(10px, 0, 0);
+    }
+}
+
+/*
+ * Theme chooser component.
+ */
+
+div.theme-chooser {
+    padding: 5px;
+    border: 1px solid var(--selected-overlay);
+    background-color: var(--selected-overlay);
+    border-radius: 18px;
+}
+
+div.login div.theme-chooser {
+    margin-bottom: 28px;
+}
+
+div.theme-chooser button {
+    display: inline-block;
+    margin: 3px;
+    padding: 2px;
+    min-width: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 12px;
+}
+
+div.theme-chooser button:hover {
+    transform: scale(1.2);
+}
+
+div.theme-chooser button.theme {
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+div.theme-chooser button.theme.light {
+    background-image: url("resources/icons/LightTheme.svg");
+    background-color: rgb(245, 245, 245);
+}
+
+div.theme-chooser button.theme.dark {
+    margin-right: 24px;
+    background-image: url("resources/icons/DarkTheme.svg");
+    background-color: rgb(35, 35, 35);
+}
+
+/*
+ * Main app component.
+ */
+
+div.sidenav {
+    height: 100vh;
+    width: 100px;
+    position: fixed;
+    z-index: 4;
+    top: 0;
+    left: 0;
+    background-color: rgb(var(--accent));
+    overflow-x: hidden;
+    padding-top: 32px;
+    font-size: 11px;
+}
+
+div.sidenav img.logo {
+    margin: 4px;
+}
+
+div.sidenav a {
+    padding: 8px;
+    margin-top: 16px;
+    text-decoration: none;
+    color: rgb(var(--background));
+    display: block;
+    text-align: center;
+}
+
+div.sidenav a:hover {
+    transform: scale(1.1);
+}
+
+div.sidenav a.active {
+    border-bottom: 1px solid var(--selected-overlay);
+    border-top: 1px solid var(--selected-overlay);
+    box-shadow: inset 100vh 0 var(--selected-overlay);
+}
+
+div.sidenav a.active:hover {
+    transform: none;
+}
+
+div.sidenav a img,
+div.sidenav a svg {
+    width: 32px;
+}
+
+div.content {
+    margin: 0 0 0 100px;
+}
+
+/*
+ * Dashboard component.
+ */
+
+div.dashboard {
+    display: flex;
+    height: 100vh;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+}
+
+div.dashboard div.content {
+    position: relative;
+    height: 90vh;
+    width: 80vw;
+    margin: 0;
+    padding: 0;
+}
+
+div.dashboard div.content div.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgb(var(--accent));
+    mask-image: url("resources/images/Dashboard.svg");
+    mask-position: center;
+    mask-repeat: no-repeat;
+    z-index: 1;
+}
+
+div.dashboard div.content canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+/*
+ * Datalog component.
+ */
+
+div.datalogs {
+    padding: 55px 16px 16px;
+}
+
+div.datalogs div.time-range {
+    position: fixed;
+    z-index: 100000;
+    top: 0;
+    right: 0;
+    margin: 0 0 8px 8px;
+    color: rgb(var(--background));
+    background-color: transparent;
+}
+
+div.datalogs div.time-range div.summary {
+    display: flex;
+    padding: 8px;
+    align-items: center;
+    background-color: rgb(var(--accent));
+}
+
+div.datalogs div.time-range div.summary div {
+    font-weight: bold;
+    margin: 4px 8px;
+}
+
+div.datalogs div.time-range div.select {
+    padding: 8px;
+    background-color: rgb(var(--accent));
+    border-bottom-left-radius: 32px;
+}
+
+div.datalogs div.time-range div.select div.input {
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: rgb(var(--background));
+    text-align: center;
+    border: 1px solid var(--selected-overlay);
+    background-color: var(--selected-overlay);
+}
+
+div.datalogs div.time-range div.select input {
+    outline: none;
+    color: rgb(var(--background));
+    text-align: center;
+    border: none;
+    background-color: transparent;
+}
+
+div.datalogs div.time-range div.select button {
+    font-size: 80%;
+    color: rgb(var(--background));
+    background-color: rgb(var(--foreground));
+}
+
+div.datalogs div.time-range div.select a {
+    display: block;
+    padding: 4px;
+    text-decoration: underline;
+}
+
+div.datalogs div.time-range div.select label {
+    display: block;
+    font-size: 75%;
+    text-align: left;
+    padding: 2px;
+    margin-top: 8px;
+}
+
+div.datalogs .chart {
+    margin: 16px;
+}
+
+div.datalogs div.add {
+    max-width: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 32px auto;
+    background-color: rgba(127, 127, 127, 0.1);
+    border: 3px solid rgba(127, 127, 127, 0.2);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+div.datalogs div.add div.properties {
+    display: inline-block;
+    margin: 0;
+    padding: 2px 8px;
+    height: 100px;
+    width: 100%;
+    background-color: transparent;
+    opacity: 0.75;
+    text-align: left;
+    font-size: 75%;
+    overflow-y: scroll;
+}
+
+
+div.datalogs div.add div.properties::-webkit-scrollbar {
+    width: 4px;
+}
+
+div.datalogs div.add div.properties::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+div.datalogs div.add div.properties::-webkit-scrollbar-thumb {
+    background-color: rgba(127, 127, 127, 0.2);
+    border: none;
+}
+
+div.datalogs div.add img {
+    height: 64px;
+    margin: 8px 32px;
+}
+
+/*
+ * Messages component.
+ */
+
+div.messages {
+    margin: 48px;
+}
+
+div.messages div.message-list {
+    max-width: 1100px;
+    margin: 16px auto;
+    border: 1px solid rgb(var(--accent));
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+div.messages table {
+    text-align: left;
+    vertical-align: center;
+    width: 100%;
+}
+
+div.messages thead {
+    margin: 0;
+    background-color: rgb(var(--accent));
+}
+
+div.messages thead th {
+    padding: 10px 0;
+    font-weight: bold;
+    color: rgb(var(--background));
+}
+
+div.messages tr {
+    margin: 0;
+    padding: 0;
+}
+
+div.messages td {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+}
+
+div.messages td.type {
+    padding-left: 8px;
+    max-width: 40px;
+}
+
+div.messages td.timestamp {
+    font-weight: bold;
+}
+
+div.messages td.id {
+    font-size: 110%;
+    font-style: italic;
+}
+
+div.messages td.content {
+    font-size: 110%;
+}
+
+div.messages td span.id {
+    font-size: 90%;
+    font-style: italic;
+}
+
+div.messages tr:nth-child(2n) {
+    background-color: rgba(var(--accent), 0.1);
+}
+
+div.messages tr.more {
+    background-color: transparent;
+}
+
+div.messages tr.more td {
+    text-align: center;
+}
+
+div.messages tr.highlighted {
+    animation: highlighted 5s;
+}
+
+div.messages tr:nth-child(2n).highlighted {
+    animation: highlighted2 5s;
+}
+
+@keyframes highlighted {
+    from {
+        background-color: rgba(var(--accent), 0.5);
+    }
+    to {
+        background-color: transparent;
+    }
+    50% {
+        background-color: rgba(var(--accent), 0.5)
+    }
+}
+
+@keyframes highlighted2 {
+    from {
+        background-color: rgba(var(--accent), 0.6)
+    }
+    to {
+        background-color: rgba(var(--accent), 0.1);
+    }
+    50% {
+        background-color: rgba(var(--accent), 0.55)
+    }
+}
+
+/*
+ * PropertyEditor component.
+ */
+
+div.property-editor {
+    margin: 48px;
+}
+
+div.property-editor div.device-access {
+    max-width: 1300px;
+    margin: 48px auto;
+}
+
+div.property-editor div.device-access header {
+    border-bottom: 3px solid rgb(var(--accent));
+    margin-bottom: 32px;
+}
+
+div.property-editor div.device-access header span.id {
+    font-size: 200%;
+    font-weight: bold;
+}
+
+div.property-editor div.device-access header span.driver {
+    padding-left: 1em;
+    font-style: italic;
+    color: rgb(var(--accent));
+}
+
+div.property-editor div.device {
+    max-width: 1200px;
+    margin: 48px auto;
+    border: 1px solid rgb(var(--accent));
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+div.property-editor div.device header {
+    position: relative;
+    margin: 0;
+    padding: 4px;
+    background-color: rgb(var(--accent));
+}
+
+div.property-editor div.device header span.id {
+    font-size: 160%;
+    font-weight: bold;
+}
+
+div.property-editor div.device header span.model {
+    margin-left: 1em;
+    font-style: italic;
+    color: rgb(var(--background));
+}
+
+div.property-editor div.device header div.collapse {
+    position: absolute;
+    right: 8px;
+    top: 5px;
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    background-color: var(--selected-overlay);
+    border-radius: 12px;
+}
+
+div.property-editor table {
+    text-align: left;
+    vertical-align: center;
+    width: 100%;
+}
+
+div.property-editor tr {
+    margin: 0;
+    padding: 0;
+}
+
+div.property-editor td {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+}
+
+div.property-editor td.type {
+    padding-left: 8px;
+}
+
+div.property-editor td.id {
+    padding-right: 16px;
+}
+
+div.property-editor tr:nth-child(2n) {
+    background-color: rgba(var(--accent), 0.1);
+}
+
+div.property-editor td.value,
+div.property-editor td.id {
+    font-size: 120%;
+    font-weight: bold;
+}
+
+div.property-editor td.value.null {
+    opacity: 0.5;
+}
+
+div.property-editor td.actions {
+    text-align: right;
+    padding-right: 8px;
+}
+
+div.property-editor button {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
+div.property-editor button:hover:enabled {
+    transform: scale(1.1);
+}
