@@ -424,31 +424,35 @@ div.sidenav img.logo {
     margin: 4px;
 }
 
-div.sidenav a {
+div.sidenav button {
     padding: 8px;
     margin-top: 16px;
     text-decoration: none;
     color: rgb(var(--background));
     display: block;
     text-align: center;
+    border: none;
+    border-radius: 0;
+    width: 100%;
+    font-size: 11px;
 }
 
-div.sidenav a:hover {
+div.sidenav button:hover {
     transform: scale(1.1);
 }
 
-div.sidenav a.active {
+div.sidenav button.active {
     border-bottom: 1px solid var(--selected-overlay);
     border-top: 1px solid var(--selected-overlay);
     box-shadow: inset 100vh 0 var(--selected-overlay);
 }
 
-div.sidenav a.active:hover {
+div.sidenav button.active:hover {
     transform: none;
 }
 
-div.sidenav a img,
-div.sidenav a svg {
+div.sidenav button img,
+div.sidenav button svg {
     width: 32px;
 }
 
@@ -557,9 +561,12 @@ div.datalogs div.time-range div.select button {
     background-color: rgb(var(--foreground));
 }
 
-div.datalogs div.time-range div.select a {
+div.datalogs div.time-range div.select button.interval {
     display: block;
+    background: none;
+    border: none;
     padding: 4px;
+    margin: 0 auto;
     text-decoration: underline;
 }
 

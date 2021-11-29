@@ -79,39 +79,34 @@ class App extends SIGatewayParentComponent<AppProperties, AppState> {
                 <div className="App">
                         <div className="sidenav">
                             <img className="logo" src={logo} alt="Logo"/>
-                            <a
+                            <button
                                 className={this.state.currentView === View.Dashboard ? "active" : ""}
-                                href="#"
                                 onClick={() => this.changeView(View.Dashboard)}>
                                 <DashboardIcon/>
                                 <br/>Dashboard
-                            </a>
-                            <a
+                            </button>
+                            <button
                                 className={this.state.currentView === View.Datalogs ? "active" : ""}
-                                href="#"
                                 onClick={() => this.changeView(View.Datalogs)}>
                                 <DataLogIcon/>
                                 <br/>Datalogs
-                            </a>
-                            <a
+                            </button>
+                            <button
                                 className={this.state.currentView === View.Messages ? "active" : ""}
-                                href="#"
                                 onClick={() => this.changeView(View.Messages)}>
                                 <MessagesIcon/><br/>Messages
-                            </a>
-                            <a
+                            </button>
+                            <button
                                 className={this.state.currentView === View.Properties ? "active" : ""}
-                                href="#"
                                 onClick={() => this.changeView(View.Properties)}>
                                 <PropertiesIcon/>
                                 <br/>Properties
-                            </a>
-                            <a
-                                href="#"
+                            </button>
+                            <button
                                 onClick={() => this.client.disconnect()}>
                                 <LogoutIcon/>
                                 <br/>Logout
-                            </a>
+                            </button>
                         </div>
                     <div className="content">
                         {this.renderContent()}
@@ -163,7 +158,7 @@ class App extends SIGatewayParentComponent<AppProperties, AppState> {
     }
 
     onDescription(status: SIStatus, description: string, id?: string) {
-        if (status == SIStatus.SUCCESS) {
+        if (status === SIStatus.SUCCESS) {
             this.description = JSON.parse(description);
         }
     }

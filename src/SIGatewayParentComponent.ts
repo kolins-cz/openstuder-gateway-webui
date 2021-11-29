@@ -1,5 +1,5 @@
 import React from "react";
-import {SIAccessLevel, SIConnectionState, SIDeviceMessage, SIGatewayClientCallbacks, SIPropertyReadResult, SIStatus, SISubscriptionsResult} from "@openstuder/openstuder";
+import {SIAccessLevel, SIDeviceMessage, SIGatewayClientCallbacks, SIPropertyReadResult, SIStatus, SISubscriptionsResult} from "@openstuder/openstuder";
 
 class SIGatewayParentComponent<P, S> extends React.Component<P, S> implements SIGatewayClientCallbacks {
     private activeChild: SIGatewayClientCallbacks | null = null;

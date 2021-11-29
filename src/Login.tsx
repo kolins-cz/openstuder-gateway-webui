@@ -1,5 +1,5 @@
 import React, {createRef} from "react";
-import {SIAccessLevel, SIGatewayClient} from "@openstuder/openstuder";
+import {SIGatewayClient} from "@openstuder/openstuder";
 import SIGatewayComponent from "./SIGatewayComponent";
 import logo from './resources/images/OpenStuder.svg'
 import ThemeChooser from "./ThemeChooser";

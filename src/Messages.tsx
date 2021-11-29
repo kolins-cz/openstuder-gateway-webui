@@ -46,7 +46,7 @@ class Messages extends SIGatewayComponent<MessagesProperties, MessagesState> {
                     {this.state.messages.map((message) => (
                         <tr className={message.highlighted ? "highlighted" : ""} key={message.timestamp /* TODO: Message.timestamp should be a date: .getTime().toString()*/ + '-' + message.messageId}>
                             <td className="type">
-                                <img src={message.message.startsWith('Halted:') ? HaltedIcon : message.message.startsWith("Error:") ? ErrorIcon : message.message.startsWith("Warning:") ? WarningIcon : NotificationIcon}/>
+                                <img alt="" src={message.message.startsWith('Halted:') ? HaltedIcon : message.message.startsWith("Error:") ? ErrorIcon : message.message.startsWith("Warning:") ? WarningIcon : NotificationIcon}/>
                             </td>
                             <td className="timestamp">{message.timestamp.toLocaleString()}</td>
                             <td className="id">{message.accessId}.{message.deviceId}</td>
@@ -70,7 +70,7 @@ class Messages extends SIGatewayComponent<MessagesProperties, MessagesState> {
         allMessages.forEach((message) => message.highlighted = false);
         allMessages.push(...messages.map((message) => {
             let newMessage = message as Message;
-            newMessage.highlighted = messages.length == 1;
+            newMessage.highlighted = messages.length === 1;
             return newMessage;
         }));
         allMessages = allMessages.sort((lhs, rhs) => lhs.timestamp > rhs.timestamp ? -1 : lhs.timestamp < rhs.timestamp ? 1 : 0)
@@ -95,7 +95,7 @@ class Messages extends SIGatewayComponent<MessagesProperties, MessagesState> {
     }
 
     onMessageRead(status: SIStatus, count: number, messages: SIDeviceMessage[]) {
-        if (status == SIStatus.SUCCESS) {
+        if (status === SIStatus.SUCCESS) {
             this.addMessages(...messages);
         }
     }

@@ -108,7 +108,7 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
     }
 
     onDatalogPropertiesRead(status: SIStatus, properties: string[]) {
-        if (status == SIStatus.SUCCESS) {
+        if (status === SIStatus.SUCCESS) {
             this.setState({
                 properties: properties
             })
@@ -117,7 +117,7 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
     }
 
     onDatalogRead(status: SIStatus, propertyId: string, count: number, values: string) {
-        if (status == SIStatus.SUCCESS) {
+        if (status === SIStatus.SUCCESS) {
             const data = values.split('\n').map((it) => {
                 const components = it.split(',');
                 return [Date.parse(components[0]), parseFloat(components[1])];
@@ -132,7 +132,7 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
 
     private resolvePropertyDescription(property: string): string {
         const components = property.split('.');
-        if (components.length == 3) {
+        if (components.length === 3) {
             if (this.props.description && this.props.description.hasOwnProperty('instances')) {
                 const deviceAccess = (this.props.description['instances'] as Array<any>).find((it) => it.hasOwnProperty('id') && it['id'] === components[0]);
                 if (deviceAccess && deviceAccess.hasOwnProperty('devices')) {
@@ -167,7 +167,7 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
 
     private addChart = () => {
         const properties = Array.from(this.propertiesSelector?.getElementsByTagName('input') as HTMLCollectionOf<HTMLInputElement>).filter((it) => it.checked);
-        if (properties.length == 0) return;
+        if (properties.length === 0) return;
 
         let charts = this.state.charts;
         charts.push({

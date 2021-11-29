@@ -36,7 +36,7 @@ class Spinner extends React.Component<SpinnerProperties, SpinnerState> {
     }
 
     public show(delayMS: number = 0) {
-        if (delayMS == 0) {
+        if (delayMS === 0) {
             this.setState({
                 visible: true
             });

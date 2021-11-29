@@ -67,7 +67,7 @@ class Property extends React.Component<PropertyProperties, PropertyState> {
                     <button disabled={!this.props.description.readable || this.state.readInProgress} onClick={() => this.props.readProperty(this)}><ReadIcon/></button>
                     }
                     {this.props.description.writeable &&
-                    <button disabled={(this.props.description.type != 'Signal' && this.state.value == null) || this.state.writeInProgress} onClick={() => this.props.writeProperty(this)}><WriteIcon/></button>
+                    <button disabled={(this.props.description.type !== 'Signal' && this.state.value == null) || this.state.writeInProgress} onClick={() => this.props.writeProperty(this)}><WriteIcon/></button>
                     }
                 </td>
             </tr>
@@ -171,13 +171,13 @@ class Property extends React.Component<PropertyProperties, PropertyState> {
             case 'DaysOfWeek': {
                 if (this.state.value != null) {
                     let values = new Array<string>();
-                    if ((this.state.value & 1) != 0) values.push('Mo');
-                    if ((this.state.value & 2) != 0) values.push('Tu');
-                    if ((this.state.value & 4) != 0) values.push('We');
-                    if ((this.state.value & 8) != 0) values.push('Th');
-                    if ((this.state.value & 16) != 0) values.push('Fr');
-                    if ((this.state.value & 32) != 0) values.push('Sa');
-                    if ((this.state.value & 32) != 0) values.push('Su');
+                    if ((this.state.value & 1) !== 0) values.push('Mo');
+                    if ((this.state.value & 2) !== 0) values.push('Tu');
+                    if ((this.state.value & 4) !== 0) values.push('We');
+                    if ((this.state.value & 8) !== 0) values.push('Th');
+                    if ((this.state.value & 16) !== 0) values.push('Fr');
+                    if ((this.state.value & 32) !== 0) values.push('Sa');
+                    if ((this.state.value & 32) !== 0) values.push('Su');
                     if (values.length === 0) {
                         return 'never';
                     } else {
@@ -199,7 +199,7 @@ class Property extends React.Component<PropertyProperties, PropertyState> {
         let stringValue = '' + value;
         let digitCount = stringValue.length;
         const pointIndex = stringValue.indexOf('.');
-        if (pointIndex == -1) {
+        if (pointIndex === -1) {
             return stringValue;
         }
         digitCount -= 1;
@@ -211,7 +211,7 @@ class Property extends React.Component<PropertyProperties, PropertyState> {
         }
         let cutAt = Math.max((maxDigits ?? 5) + 1, pointIndex);
         if (maxDecimals) {
-            if (maxDecimals == 0) {
+            if (maxDecimals === 0) {
                 cutAt = Math.min(cutAt, pointIndex);
             } else {
                 cutAt = Math.min(cutAt, pointIndex + maxDecimals + 1);

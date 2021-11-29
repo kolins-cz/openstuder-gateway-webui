@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import SIGatewayComponent from "./SIGatewayComponent";
 import Property from "./Property";
 import {DeviceAccessDescription, DeviceDescription, GatewayDescription, PropertyDescription} from "./Description";
@@ -43,10 +42,10 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
         const deviceAccesses = this.props.model.instances;
         return (
             <div className="property-editor">
-                {deviceAccesses.map((it) => this.renderDeviceAccess(it, deviceAccesses.length != 1))}
+                {deviceAccesses.map((it) => this.renderDeviceAccess(it, deviceAccesses.length !== 1))}
                 <div ref={(it) => this.floatInputDialog = it} className="modal">
                     <form>
-                        <h1 ref={(it) => this.floatInputText = it}/>
+                        <h1 ref={(it) => this.floatInputText = it}>float input</h1>
                         <input ref={(it) => this.floatInput = it} type="text" pattern="[+-]?([0-9]*[.])?[0-9]+" required={true} onChange={(event) => this.floatInputOkButton!.disabled = !event.target.validity.valid}/>
                         <br/>
                         <button ref={(it) => this.floatInputOkButton = it} onClick={this.writeFloatProperty}>Ok</button>
@@ -55,7 +54,7 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                 </div>
                 <div ref={(it) => this.boolInputDialog = it} className="modal">
                     <form>
-                        <h1 ref={(it) => this.boolInputText = it}/>
+                        <h1 ref={(it) => this.boolInputText = it}>bool input</h1>
                         <label className="switch">
                             <input ref={(it) => this.boolInput = it} type="checkbox"/>
                             <span className="slider"/>
@@ -67,7 +66,7 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                 </div>
                 <div ref={(it) => this.enumInputDialog = it} className="modal">
                     <form>
-                        <h1 ref={(it) => this.enumInputText = it}/>
+                        <h1 ref={(it) => this.enumInputText = it}>enum input</h1>
                         <select ref={(it) => this.enumInput = it}>
                         </select>
                         <br/>
@@ -77,7 +76,7 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                 </div>
                 <div ref={(it) => this.timeOfDayInputDialog = it} className="modal">
                     <form>
-                        <h1 ref={(it) => this.timeOfDayInputText = it}/>
+                        <h1 ref={(it) => this.timeOfDayInputText = it}>time input</h1>
                         <input ref={(it) => this.timeOfDayInput = it} type="time"/>
                         <br/>
                         <button onClick={this.writeTimeOfDayProperty}>Ok</button>
@@ -86,7 +85,7 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                 </div>
                 <div ref={(it) => this.daysOfWeekInputDialog = it} className="modal">
                     <form>
-                        <h1 ref={(it) => this.daysOfWeekInputText = it}/>
+                        <h1 ref={(it) => this.daysOfWeekInputText = it}>days of week input</h1>
                         <table>
                             <tbody>
                                 <tr>
@@ -173,7 +172,7 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                     </header>
                 )}
                 <div>
-                    {deviceAccess.devices.filter((it) => it.model.indexOf('multicast') == -1).map((it) => this.renderDevice(it, deviceAccess.id))}
+                    {deviceAccess.devices.filter((it) => it.model.indexOf('multicast') === -1).map((it) => this.renderDevice(it, deviceAccess.id))}
                 </div>
             </div>
         )
@@ -257,7 +256,7 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                     let element = document.createElement('option');
                     element.innerHTML = it;
                     element.value = property.getDescription().values[it];
-                    if (element.value == property.getValue()) {
+                    if (element.value === property.getValue()) {
                         element.selected = true;
                     }
                     this.enumInput?.options.add(element);
@@ -280,7 +279,7 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                 const value = property.getValue();
                 if (value) {
                     for (let i = 0; i < 7; ++i) {
-                        this.daysOfWeekInputs[i]!.checked = (value & (1 << i)) != 0;
+                        this.daysOfWeekInputs[i]!.checked = (value & (1 << i)) !== 0;
                     }
                 }
                 this.daysOfWeekInputDialog!.style.setProperty('display', 'flex');
@@ -385,7 +384,7 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
     }
 
     onPropertyWritten(status: SIStatus, propertyId: string) {
-        if (this.propertyToWrite && this.propertyToWrite.getId() == propertyId) {
+        if (this.propertyToWrite && this.propertyToWrite.getId() === propertyId) {
             if (status === SIStatus.SUCCESS) {
                 this.propertyToWrite.valueWasSuccessfullyWritten(this.valueToWrite);
             } else {
@@ -399,7 +398,7 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
     }
 
     private toggleCollapse(control: HTMLDivElement, target: HTMLTableElement) {
-        const collapse = target.style.display == 'table';
+        const collapse = target.style.display === 'table';
         target.style.setProperty('display', collapse ? 'none' : 'table');
         control.innerText = collapse ? '+' : '-';
     }

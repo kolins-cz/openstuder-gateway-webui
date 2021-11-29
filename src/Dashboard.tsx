@@ -31,10 +31,6 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
 
     private updateTimeoutId: number | undefined = undefined;
 
-    constructor(props: DashboardProperties) {
-        super(props);
-    }
-
     public componentDidMount() {
         this.renderCanvas();
         window.onresize = () => this.renderCanvas();
@@ -160,7 +156,7 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
                         break;
 
                     default:
-                        const multicast = properties.find((id) => id.indexOf(".xts.") != -1);
+                        const multicast = properties.find((id) => id.indexOf(".xts.") !== -1);
                         if (multicast) {
                             this.inverterOnId = multicast;
                         } else {
@@ -171,24 +167,24 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
 
             case "*.*.11004":
             case "*.*.15010":
-                this.solarInPowerIds = this.solarInPowerIds.concat(properties.filter((id) => id.indexOf('.vts.') == -1 && id.indexOf('.vss.') == -1));
+                this.solarInPowerIds = this.solarInPowerIds.concat(properties.filter((id) => id.indexOf('.vts.') === -1 && id.indexOf('.vss.') === -1));
                 break;
 
             case "*.*.3137":
-                this.acInPowerIds = properties.filter((id) => id.indexOf('.xts.') == -1);
+                this.acInPowerIds = properties.filter((id) => id.indexOf('.xts.') === -1);
                 break;
 
             case "*.*.3136":
-                this.acOutPowerIds = properties.filter((id) => id.indexOf('.xts.') == -1);
+                this.acOutPowerIds = properties.filter((id) => id.indexOf('.xts.') === -1);
                 break;
 
             case "*.*.7003":
-                if (properties.length == 1)
+                if (properties.length === 1)
                     this.batteryInPowerId = properties[0];
                 break;
 
             case "*.*.7002":
-                if (properties.length == 1)
+                if (properties.length === 1)
                     this.batteryChargeLevelId = properties[0];
                 break;
         }
@@ -197,7 +193,7 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
     onPropertiesRead(results: SIPropertyReadResult[]) {
         this.spinner.current?.hide();
 
-        const inverterOnResult = results.find((result) => result.id == this.inverterOnId);
+        const inverterOnResult = results.find((result) => result.id === this.inverterOnId);
         if (inverterOnResult) {
             this.inverterOn = inverterOnResult.value;
         }

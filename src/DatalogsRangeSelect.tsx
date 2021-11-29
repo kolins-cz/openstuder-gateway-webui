@@ -43,12 +43,12 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
             <div className="time-range">
                 <div className="summary" onClick={() => this.toggleExpanded()}>
                     <TimeRangeIcon/>
-                    <div>{this.state.from.getHours() == 0 && this.state.from.getMinutes() == 0 ? this.state.from.toLocaleDateString() : this.state.from.toLocaleDateString() + ' ' + this.state.from.toLocaleTimeString([], {
+                    <div>{this.state.from.getHours() === 0 && this.state.from.getMinutes() === 0 ? this.state.from.toLocaleDateString() : this.state.from.toLocaleDateString() + ' ' + this.state.from.toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit'
                     })}</div>
                     <div>-</div>
-                    <div>{this.state.to.getHours() == 0 && this.state.to.getMinutes() == 0 ? this.state.to.toLocaleDateString() : this.state.to.toLocaleDateString() + ' ' + this.state.to.toLocaleTimeString([], {
+                    <div>{this.state.to.getHours() === 0 && this.state.to.getMinutes() === 0 ? this.state.to.toLocaleDateString() : this.state.to.toLocaleDateString() + ' ' + this.state.to.toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit'
                     })}</div>
@@ -66,16 +66,16 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
                     </div>
                     <button onClick={() => this.onCustomRangeApplied()}>Apply</button>
                     <hr/>
-                    <a onClick={() => this.onQuickRangeClicked('today')}>Today</a>
-                    <a onClick={() => this.onQuickRangeClicked('yesterday')}>Yesterday</a>
-                    <a onClick={() => this.onQuickRangeClicked('this_week')}>This week</a>
-                    <a onClick={() => this.onQuickRangeClicked('last_week')}>Last week</a>
-                    <a onClick={() => this.onQuickRangeClicked('this_month')}>This month</a>
-                    <a onClick={() => this.onQuickRangeClicked('last_month')}>Last month</a>
-                    <a onClick={() => this.onQuickRangeClicked('this_year')}>This year</a>
-                    <a onClick={() => this.onQuickRangeClicked('last_year')}>Last year</a>
-                    <a onClick={() => this.onQuickRangeClicked('last_60_minutes')}>Last 60 minutes</a>
-                    <a onClick={() => this.onQuickRangeClicked('last_24_hours')}>Last 24 hours</a>
+                    <button className="interval" onClick={() => this.onQuickRangeClicked('today')}>Today</button>
+                    <button className="interval" onClick={() => this.onQuickRangeClicked('yesterday')}>Yesterday</button>
+                    <button className="interval" onClick={() => this.onQuickRangeClicked('this_week')}>This week</button>
+                    <button className="interval" onClick={() => this.onQuickRangeClicked('last_week')}>Last week</button>
+                    <button className="interval" onClick={() => this.onQuickRangeClicked('this_month')}>This month</button>
+                    <button className="interval" onClick={() => this.onQuickRangeClicked('last_month')}>Last month</button>
+                    <button className="interval" onClick={() => this.onQuickRangeClicked('this_year')}>This year</button>
+                    <button className="interval" onClick={() => this.onQuickRangeClicked('last_year')}>Last year</button>
+                    <button className="interval" onClick={() => this.onQuickRangeClicked('last_60_minutes')}>Last 60 minutes</button>
+                    <button className="interval" onClick={() => this.onQuickRangeClicked('last_24_hours')}>Last 24 hours</button>
                 </div>
             </div>
         );
