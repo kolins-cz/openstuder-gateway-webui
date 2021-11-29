@@ -21,9 +21,23 @@ jobs:
           export NODE_OPTIONS=--openssl-legacy-provider
           npm run build
       - name: Create archive
-        run: tar -cvjSf openstuder-gateway-webui.tar.bz2 build
-      - name: Upload web archive
-        uses: actions/upload-artifact@v2
+        run: tar -C build -cvjSf openstuder-gateway-webui.tar.bz2 .
+      - name: Create release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          name: website
-          path: openstuder-gateway-webui.tar.bz2
+          draft: false
+          prerelease: false
+          release_name: Release ${{ github.ref }}
+          tag_name: ${{ github.ref }}
+      - name: Upload
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: openstuder-gateway-webui.tar.bz2
+          asset_name: openstuder-gateway-webui.tar.bz2
+          asset_content_type: application/bzip2
