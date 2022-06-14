@@ -1,15 +1,20 @@
-import React from "react";
+import React, {createRef} from "react";
 import SIGatewayComponent from "./SIGatewayComponent";
 import Property from "./Property";
-import {DeviceAccessDescription, DeviceDescription, GatewayDescription, PropertyDescription} from "./Description";
-import {SIGatewayClient, SIStatus} from "@openstuder/openstuder";
+import {DeviceAccessDescription, DeviceDescription, PropertyDescription} from "./Description";
+import {SIGatewayClient, SIStatus, SIPropertyReadResult} from "@openstuder/openstuder";
+import {ReactComponent as ReadAllIcon} from "./resources/icons/ReadAll.svg";
+import {ReactComponent as CollapseIcon} from "./resources/icons/Collapse.svg";
+import {ReactComponent as ExpandIcon} from "./resources/icons/Expand.svg";
+import Spinner from "./Spinner";
+import {toast} from "react-toastify";
 
 interface PropertyEditorProperties {
     client: SIGatewayClient;
-    model: GatewayDescription;
+    deviceAccess?: DeviceAccessDescription;
 }
 
-class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> {
+class PropertyEditor extends SIGatewayComponent<PropertyEditorProperties, {}> {
     private properties = new Map<string, Property>();
 
     private scrollPosY: number = 0;
@@ -38,22 +43,23 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
     private daysOfWeekInputs: Array<HTMLInputElement | null> = [null, null, null, null, null, null, null];
     private daysOfWeekInputText: HTMLHeadElement | null = null;
 
+    private spinner = createRef<Spinner>();
+
     public render() {
-        const deviceAccesses = this.props.model.instances;
         return (
             <div className="property-editor">
-                {deviceAccesses.map((it) => this.renderDeviceAccess(it, deviceAccesses.length !== 1))}
+                {this.renderDeviceAccess(this.props.deviceAccess!)}
                 <div ref={(it) => this.floatInputDialog = it} className="modal">
-                    <form>
+                    <div className="form">
                         <h1 ref={(it) => this.floatInputText = it}>float input</h1>
                         <input ref={(it) => this.floatInput = it} type="text" pattern="[+-]?([0-9]*[.])?[0-9]+" required={true} onChange={(event) => this.floatInputOkButton!.disabled = !event.target.validity.valid}/>
                         <br/>
                         <button ref={(it) => this.floatInputOkButton = it} onClick={this.writeFloatProperty}>Ok</button>
                         <button onClick={this.cancelPropertyWrite}>Cancel</button>
-                    </form>
+                    </div>
                 </div>
                 <div ref={(it) => this.boolInputDialog = it} className="modal">
-                    <form>
+                    <div className="form">
                         <h1 ref={(it) => this.boolInputText = it}>bool input</h1>
                         <label className="switch">
                             <input ref={(it) => this.boolInput = it} type="checkbox"/>
@@ -62,29 +68,29 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                         <br/>
                         <button onClick={this.writeBoolProperty}>Ok</button>
                         <button onClick={this.cancelPropertyWrite}>Cancel</button>
-                    </form>
+                    </div>
                 </div>
                 <div ref={(it) => this.enumInputDialog = it} className="modal">
-                    <form>
+                    <div className="form">
                         <h1 ref={(it) => this.enumInputText = it}>enum input</h1>
                         <select ref={(it) => this.enumInput = it}>
                         </select>
                         <br/>
                         <button onClick={this.writeEnumProperty}>Ok</button>
                         <button onClick={this.cancelPropertyWrite}>Cancel</button>
-                    </form>
+                    </div>
                 </div>
                 <div ref={(it) => this.timeOfDayInputDialog = it} className="modal">
-                    <form>
+                    <div className="form">
                         <h1 ref={(it) => this.timeOfDayInputText = it}>time input</h1>
                         <input ref={(it) => this.timeOfDayInput = it} type="time"/>
                         <br/>
                         <button onClick={this.writeTimeOfDayProperty}>Ok</button>
                         <button onClick={this.cancelPropertyWrite}>Cancel</button>
-                    </form>
+                    </div>
                 </div>
                 <div ref={(it) => this.daysOfWeekInputDialog = it} className="modal">
-                    <form>
+                    <div className="form">
                         <h1 ref={(it) => this.daysOfWeekInputText = it}>days of week input</h1>
                         <table>
                             <tbody>
@@ -156,21 +162,16 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                         <br/>
                         <button onClick={this.writeDaysOfWeekProperty}>Ok</button>
                         <button onClick={this.cancelPropertyWrite}>Cancel</button>
-                    </form>
+                    </div>
                 </div>
+                <Spinner ref={this.spinner}/>
             </div>
         )
     }
 
-    private renderDeviceAccess(deviceAccess: DeviceAccessDescription, renderId: boolean = true) {
+    private renderDeviceAccess(deviceAccess: DeviceAccessDescription) {
         return (
             <div key={deviceAccess.id} className="device-access" id={deviceAccess.id}>
-                {renderId && (
-                    <header>
-                        <span className="id">{deviceAccess.id}</span>
-                        <span className="driver">{deviceAccess.driver}</span>
-                    </header>
-                )}
                 <div>
                     {deviceAccess.devices.filter((it) => it.model.indexOf('multicast') === -1).map((it) => this.renderDevice(it, deviceAccess.id))}
                 </div>
@@ -185,16 +186,23 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                 <header>
                     <span className="id">{device.id}</span>
                     <span className="model">{device.model}</span>
-                    <div className="collapse" onClick={(event) => this.toggleCollapse(event.target as HTMLDivElement, document.getElementById(id + '-table')! as HTMLTableElement)}>-</div>
+                    <div className="button" onClick={() => this.readAllProperties(device)} title="Read all properties">
+                        <ReadAllIcon/>
+                    </div>
+                    <div className="collapse" onClick={(event) => this.toggleCollapse(event.currentTarget as HTMLDivElement, document.getElementById(id + '-table')! as HTMLTableElement)}>
+                        <CollapseIcon className="collapse"/>
+                        <ExpandIcon className="expand" style={{display: "none"}}/>
+                    </div>
                 </header>
                 <table id={id + '-table'}>
                     <tbody>
-                        {device.properties.map((it: any) => this.renderProperty(it, deviceAccessId, device.id))}
+                        {device.properties
+                            .sort((lhs, rhs) =>
+                                lhs.id === rhs.id ? 0 : (lhs.id < rhs.id ? -1 : 1)
+                            )
+                            .map((it: any) => this.renderProperty(it, deviceAccessId, device.id))}
                     </tbody>
                 </table>
-                <header>
-                    <span>&nbsp;</span>
-                </header>
             </div>
         )
     }
@@ -202,8 +210,15 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
     private renderProperty(property: PropertyDescription, deviceAccessId: string, deviceId: string) {
         const id = deviceAccessId + '.' + deviceId + '.' + property.id;
         return (
-            <Property key={id} ref={(it) => this.properties.set(id, it!)} description={property} deviceAccessId={deviceAccessId} deviceId={deviceId} readProperty={this.readProperty}
-                      writeProperty={this.writeProperty}/>
+            <Property
+                key={id}
+                ref={(it) => this.properties.set(id, it!)}
+                description={property}
+                deviceAccessId={deviceAccessId}
+                deviceId={deviceId}
+                readProperty={this.readProperty}
+                writeProperty={this.writeProperty}
+            />
         )
     }
 
@@ -211,6 +226,14 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
         property.valueWillBeRead();
         this.props.client.readProperty(property.getId());
     };
+
+    private readAllProperties(device: DeviceDescription) {
+        this.spinner.current?.show(300);
+        const ids = device.properties
+            .filter((property: PropertyDescription) => property.readable)
+            .map((property: PropertyDescription) => `${this.props.deviceAccess!.id}.${device.id}.${property.id}`);
+        this.props.client.readProperties(ids);
+    }
 
     private writeProperty = (property: Property) => {
         this.propertyToWrite = property;
@@ -378,9 +401,17 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
                 property.valueWasSuccessfullyRead(value);
             } else {
                 property.valueReadError();
-                alert('Error reading property ' + propertyId);
+
+                toast.error('Error reading property ' + propertyId);
             }
         }
+    }
+
+    onPropertiesRead(results: SIPropertyReadResult[]) {
+        this.spinner.current?.hide();
+        results.forEach((result) => {
+            this.onPropertyRead(result.status, result.id, result.value?.toString());
+        });
     }
 
     onPropertyWritten(status: SIStatus, propertyId: string) {
@@ -398,10 +429,11 @@ class PropertiesEditor extends SIGatewayComponent<PropertyEditorProperties, {}> 
     }
 
     private toggleCollapse(control: HTMLDivElement, target: HTMLTableElement) {
-        const collapse = target.style.display === 'table';
+        const collapse = target.style.display !== 'none';
         target.style.setProperty('display', collapse ? 'none' : 'table');
-        control.innerText = collapse ? '+' : '-';
+        (control.querySelector(".expand")! as SVGElement).style.display = collapse ? "block" : "none";
+        (control.querySelector(".collapse")! as SVGElement).style.display = !collapse ? "block" : "none";
     }
 }
 
-export default PropertiesEditor;
+export default PropertyEditor;

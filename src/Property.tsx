@@ -8,6 +8,7 @@ import {ReactComponent as DaysOfWeekIcon} from "./resources/icons/DaysOfWeek.svg
 import {ReactComponent as SignalIcon} from "./resources/icons/Signal.svg"
 import {ReactComponent as ReadIcon} from "./resources/icons/Read.svg"
 import {ReactComponent as WriteIcon} from "./resources/icons/Write.svg"
+import {ReactComponent as ExecuteIcon} from "./resources/icons/Execute.svg"
 
 interface PropertyProperties {
     deviceAccessId: string;
@@ -20,7 +21,7 @@ interface PropertyProperties {
 class PropertyState {
     readInProgress: boolean = false;
     writeInProgress: boolean = false;
-    value: any = null;
+    value: any = undefined;
 }
 
 class Property extends React.Component<PropertyProperties, PropertyState> {
@@ -61,13 +62,16 @@ class Property extends React.Component<PropertyProperties, PropertyState> {
                 <td className="type" title={this.props.description.type}>{icon}</td>
                 <td className="id">{this.props.description.id}</td>
                 <td className="description">{this.props.description.description}</td>
-                <td className={this.state.value != null ? 'value' : 'value null'}>{this.renderValue()}</td>
+                <td className={this.state.value !== undefined ? 'value' : 'value null'}>{this.renderValue()}</td>
                 <td className="actions">
-                    {this.props.description.readable &&
-                    <button disabled={!this.props.description.readable || this.state.readInProgress} onClick={() => this.props.readProperty(this)}><ReadIcon/></button>
+                    {this.props.description.writeable && this.props.description.readable &&
+                        <button disabled={(this.props.description.type !== 'Signal' && this.state.value == null) || this.state.writeInProgress} onClick={() => this.props.writeProperty(this)}><WriteIcon/></button>
                     }
-                    {this.props.description.writeable &&
-                    <button disabled={(this.props.description.type !== 'Signal' && this.state.value == null) || this.state.writeInProgress} onClick={() => this.props.writeProperty(this)}><WriteIcon/></button>
+                    {this.props.description.writeable && !this.props.description.readable &&
+                        <button disabled={(this.props.description.type !== 'Signal' && this.state.value == null) || this.state.writeInProgress} onClick={() => this.props.writeProperty(this)}><ExecuteIcon/></button>
+                    }
+                    {this.props.description.readable &&
+                        <button disabled={!this.props.description.readable || this.state.readInProgress} onClick={() => this.props.readProperty(this)}><ReadIcon/></button>
                     }
                 </td>
             </tr>
@@ -93,9 +97,12 @@ class Property extends React.Component<PropertyProperties, PropertyState> {
     }
 
     public valueWasSuccessfullyRead(value: any) {
+        if (this.id === "xcom.vt1.11034") {
+            console.log(value);
+        }
         this.setState({
             readInProgress: false,
-            value: value
+            value: value?.toString()
         });
     }
 
@@ -195,7 +202,8 @@ class Property extends React.Component<PropertyProperties, PropertyState> {
     }
 
     private formatFloatValue(value?: number, maxDigits?: number, maxDecimals?: number): string | null {
-        if (!value) return null;
+        if (value === undefined || value == null) return null;
+        if (isNaN(value)) return '-';
         let stringValue = '' + value;
         let digitCount = stringValue.length;
         const pointIndex = stringValue.indexOf('.');

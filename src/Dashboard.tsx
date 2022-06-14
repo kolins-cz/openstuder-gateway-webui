@@ -1,13 +1,31 @@
 import SIGatewayComponent from "./SIGatewayComponent";
 import React, {createRef} from "react";
-import {SIAccessLevel, SIGatewayClient, SIPropertyReadResult, SIStatus} from "@openstuder/openstuder";
+import {
+    SIAccessLevel,
+    SIDeviceFunctions,
+    SIGatewayClient,
+    SIPropertyReadResult,
+    SIStatus
+} from "@openstuder/openstuder";
 import Spinner from "./Spinner";
+import {DeviceAccessDescription, DeviceDescription, findPropertiesIds, PropertyDescription} from "./Description";
+import fscreen from 'fscreen';
+import {ToastContainer} from "react-toastify";
+import {ReactComponent as EnterFullscreen} from "./resources/icons/EnterFullscreen.svg";
+import {ReactComponent as ExitFullscreen} from "./resources/icons/ExitFullscreen.svg";
 
 interface DashboardProperties {
     client: SIGatewayClient
+    deviceAccess?: DeviceAccessDescription,
+    showDeviceAccess: boolean
 }
 
-class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
+class  DashboardState {
+    fullscreen: boolean = false;
+}
+
+class Dashboard extends SIGatewayComponent<DashboardProperties, DashboardState> {
+    private dashboard = createRef<HTMLDivElement>();
     private canvas = createRef<HTMLCanvasElement>();
     private spinner = createRef<Spinner>();
 
@@ -31,19 +49,39 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
 
     private updateTimeoutId: number | undefined = undefined;
 
+    constructor(props: DashboardProperties) {
+        super(props);
+        this.state = new DashboardState();
+    }
+
     public componentDidMount() {
         this.renderCanvas();
         window.onresize = () => this.renderCanvas();
+        fscreen.onfullscreenchange = () => this.setState({
+            fullscreen: fscreen.fullscreenElement === this.dashboard.current
+        });
 
-        try {
-            this.props.client.findProperties("*.*.3049");
-            this.props.client.findProperties("*.*.11004");
-            this.props.client.findProperties("*.*.15010");
-            this.props.client.findProperties("*.*.3137");
-            this.props.client.findProperties("*.*.3136");
-            this.props.client.findProperties("*.*.7003");
-            this.props.client.findProperties("*.*.7002");
-        } catch (e: unknown) {}
+        if (this.props.deviceAccess) {
+            this.solarInPowerIds = findPropertiesIds(this.props.deviceAccess,
+                (device: DeviceDescription) => !device.virtual,
+                (property: PropertyDescription) => property.id === 11004 || property.id === 15010);
+            this.acOutPowerIds = findPropertiesIds(this.props.deviceAccess,
+                (device: DeviceDescription) => !device.virtual,
+                (property: PropertyDescription) => property.id === 3136);
+            this.batteryInPowerId = findPropertiesIds(this.props.deviceAccess,
+                (device: DeviceDescription) => !device.virtual,
+                (property: PropertyDescription) => property.id === 7003)[0];
+            this.batteryChargeLevelId = findPropertiesIds(this.props.deviceAccess,
+                (device: DeviceDescription) => !device.virtual,
+                (property: PropertyDescription) => property.id === 7002)[0];
+            this.acInPowerIds = findPropertiesIds(this.props.deviceAccess,
+                (device: DeviceDescription) => !device.virtual,
+                (property: PropertyDescription) => property.id === 3137);
+            this.inverterOnId = findPropertiesIds(this.props.deviceAccess,
+                (device: DeviceDescription) => !device.virtual,
+                (property: PropertyDescription) => property.id === 3049)[0];
+        }
+
         if (!this.updateTimeoutId) {
             this.update();
             this.spinner.current?.show(300);
@@ -59,12 +97,23 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
 
     public render() {
         return (
-            <div className="dashboard">
+            <div className="dashboard" ref={this.dashboard}>
                 <div className="content">
                     <div className="background"/>
                     <canvas className="dashboard" ref={this.canvas} onClick={this.onCanvasClicked}/>
                     <Spinner ref={this.spinner}/>
+                    {
+                        fscreen.fullscreenEnabled && (this.state.fullscreen &&
+                            <ExitFullscreen className="exit-fullscreen" onClick={this.toggleFullscreen}/> ||
+                            <EnterFullscreen className="enter-fullscreen" onClick={this.toggleFullscreen}/>
+                        )
+                    }
                 </div>
+                <ToastContainer
+                    hideProgressBar={true}
+                    theme="colored"
+                    autoClose={this.state.fullscreen ? 60000 : 10000}
+                    newestOnTop={true}/>
             </div>
         )
     }
@@ -76,13 +125,13 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
             canvas.height = canvas.clientHeight;
             const context = this.canvas.current?.getContext('2d');
             if (context) {
-                context.translate(canvas.width/2.0, canvas.height/2.0);
-                const scale = Math.min(canvas.width/560, canvas.height/500);
+                context.translate(canvas.width / 2.0, canvas.height / 2.0);
+                const scale = Math.min(canvas.width / 560, canvas.height / 500);
                 context.scale(scale, scale);
                 context.textAlign = "right";
                 context.font = "bold 18px Avenir Next, Arial";
                 context.fillStyle = 'rgb(' + (document.documentElement.style.getPropertyValue('--foreground') || '35, 35, 35') + ')';
-                context.fillText((this.solarInPowerSum?.toFixed(2)|| "-"), 18, -206);
+                context.fillText((this.solarInPowerSum?.toFixed(2) || "-"), 18, -206);
                 context.fillText((this.batteryInPower?.toFixed(1) || "-"), 23, 145);
                 context.fillText((this.batteryChargeLevel?.toFixed(1) || "-"), 23, 167);
                 context.fillText((this.acInPowerSum?.toFixed(2) || "-"), -192, -26);
@@ -106,15 +155,22 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
                 context.ellipse(this.inverterOn ? 4.4 : -4.4, 2.6, radius, radius, 0, 0, 2 * Math.PI);
                 if (this.inverterOn) context.fill();
                 else context.stroke();
+                context.globalAlpha = 1.0;
+                if (this.props.showDeviceAccess) {
+                    context.fillStyle = 'rgb(' + (document.documentElement.style.getPropertyValue('--accent') || '84, 156, 181') + ')';
+                    context.font = "bold 18px Avenir Next, Arial";
+                    context.textAlign = "right"
+                    context.fillText(this.props.deviceAccess?.id || "", 270, 238);
+                }
             }
         }
     }
 
     private onCanvasClicked = (event: React.MouseEvent<HTMLElement>) => {
-        if (this.inverterOnId && this.props.client.getAccessLevel() >= SIAccessLevel.EXPERT) {
-            const relX = event.nativeEvent.offsetX / this.canvas.current!.clientWidth;
-            const relY = event.nativeEvent.offsetY / this.canvas.current!.clientHeight;
-            if (relX >= 0.483 && relX <= 0.516 && relY >= 0.498 && relY <= 0.512) {
+        const relX = event.nativeEvent.offsetX / this.canvas.current!.clientWidth;
+        const relY = event.nativeEvent.offsetY / this.canvas.current!.clientHeight;
+        if (relX >= 0.483 && relX <= 0.516 && relY >= 0.498 && relY <= 0.512) {
+            if (this.inverterOnId && this.props.client.getAccessLevel() >= SIAccessLevel.EXPERT) {
                 this.spinner.current?.show(500);
                 if (this.updateTimeoutId) {
                     window.clearTimeout(this.updateTimeoutId);
@@ -125,6 +181,20 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
             }
         }
     };
+
+    private toggleFullscreen = () => {
+        if (fscreen.fullscreenElement === this.dashboard.current)  {
+            fscreen.exitFullscreen();
+            this.setState({
+                fullscreen: false
+            });
+        } else {
+            fscreen.requestFullscreen(this.dashboard.current!);
+            this.setState({
+                fullscreen: true
+            });
+        }
+    }
 
     private update = () => {
         let properties = Array<string>();
@@ -138,13 +208,14 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
         if (properties.length > 0) {
             try {
                 this.props.client.readProperties(properties);
-            } catch (e: unknown) {}
+            } catch (e: unknown) {
+            }
         } else {
             this.updateTimeoutId = window.setTimeout(this.update, 250);
         }
     };
 
-    onPropertiesFound(status: SIStatus, id: string, count: number, properties: string[]) {
+    onPropertiesFound(status: SIStatus, id: string, count: number, virtual: boolean, functions: Set<SIDeviceFunctions>, properties: string[]) {
         switch (id) {
             case "*.*.3049":
                 switch (properties.length) {
@@ -163,29 +234,6 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, {}> {
                             this.inverterOnId = properties[0];
                         }
                 }
-                break;
-
-            case "*.*.11004":
-            case "*.*.15010":
-                this.solarInPowerIds = this.solarInPowerIds.concat(properties.filter((id) => id.indexOf('.vts.') === -1 && id.indexOf('.vss.') === -1));
-                break;
-
-            case "*.*.3137":
-                this.acInPowerIds = properties.filter((id) => id.indexOf('.xts.') === -1);
-                break;
-
-            case "*.*.3136":
-                this.acOutPowerIds = properties.filter((id) => id.indexOf('.xts.') === -1);
-                break;
-
-            case "*.*.7003":
-                if (properties.length === 1)
-                    this.batteryInPowerId = properties[0];
-                break;
-
-            case "*.*.7002":
-                if (properties.length === 1)
-                    this.batteryChargeLevelId = properties[0];
                 break;
         }
     }

@@ -1,5 +1,5 @@
 import React from "react";
-import {SIAccessLevel, SIDeviceMessage, SIGatewayClientCallbacks, SIPropertyReadResult, SIStatus, SISubscriptionsResult} from "@openstuder/openstuder";
+import {SIAccessLevel, SIDeviceFunctions, SIDeviceMessage, SIGatewayClientCallbacks, SIPropertyReadResult, SIStatus, SISubscriptionsResult} from "@openstuder/openstuder";
 
 class SIGatewayParentComponent<P, S> extends React.Component<P, S> implements SIGatewayClientCallbacks {
     private activeChild: SIGatewayClientCallbacks | null = null;
@@ -44,8 +44,8 @@ class SIGatewayParentComponent<P, S> extends React.Component<P, S> implements SI
         if (this.activeChild) this.activeChild.onMessageRead(status, count, messages);
     }
 
-    onPropertiesFound(status: SIStatus, id: string, count: number, properties: string[]): void {
-        if (this.activeChild) this.activeChild.onPropertiesFound(status, id, count, properties);
+    onPropertiesFound(status: SIStatus, id: string, count: number, virtual: boolean, functions: Set<SIDeviceFunctions>, properties: string[]): void {
+        if (this.activeChild) this.activeChild.onPropertiesFound(status, id, count, virtual, functions, properties);
     }
 
     onPropertiesRead(results: SIPropertyReadResult[]): void {

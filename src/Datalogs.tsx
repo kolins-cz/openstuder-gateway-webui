@@ -3,12 +3,12 @@ import SIGatewayComponent from "./SIGatewayComponent";
 import {SIGatewayClient, SIStatus} from "@openstuder/openstuder";
 import DatalogsRangeSelect from "./DatalogsRangeSelect";
 import Chart, {ChartProperty} from "./Chart";
-import {GatewayDescription} from "./Description";
+import {DeviceAccessDescription, findPropertyDescription} from "./Description";
 import AddIcon from "./resources/icons/Add.svg";
 
 interface DatalogsProperties {
     client: SIGatewayClient
-    description: GatewayDescription | undefined
+    deviceAccess: DeviceAccessDescription | undefined
 }
 
 type DatalogsChart = {
@@ -46,7 +46,7 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
         from.setTime(to.getTime() - 24 * 60 * 60 * 1000);
 
         let charts = new Array<DatalogsChart>();
-        const currentChartsJson = localStorage.getItem('charts');
+        const currentChartsJson = localStorage.getItem(`charts-${this.props.deviceAccess?.id}`);
         if (currentChartsJson) {
             const currentCharts = JSON.parse(currentChartsJson) as Array<{series: Array<ChartProperty>}>;
             charts = currentCharts.map((it, i) => ({
@@ -110,7 +110,7 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
     onDatalogPropertiesRead(status: SIStatus, properties: string[]) {
         if (status === SIStatus.SUCCESS) {
             this.setState({
-                properties: properties
+                properties: properties.filter((it) => it.startsWith(this.props.deviceAccess?.id + '.'))
             })
         }
         this.updateData(this.state.charts);
@@ -130,34 +130,16 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
         }
     }
 
-    private resolvePropertyDescription(property: string): string {
-        const components = property.split('.');
-        if (components.length === 3) {
-            if (this.props.description && this.props.description.hasOwnProperty('instances')) {
-                const deviceAccess = (this.props.description['instances'] as Array<any>).find((it) => it.hasOwnProperty('id') && it['id'] === components[0]);
-                if (deviceAccess && deviceAccess.hasOwnProperty('devices')) {
-                    const device = (deviceAccess['devices'] as Array<any>).find((it) => it.hasOwnProperty('id') && it['id'] === components[1]);
-                    if (device && device.hasOwnProperty('properties')) {
-                        const deviceModel = device['model'];
-                        const prop = (device['properties'] as Array<any>).find((it) => it.hasOwnProperty('id') && it['id'] === parseInt(components[2]));
-                        if (prop && prop.hasOwnProperty('description')) {
-                            if (prop.hasOwnProperty('unit')) {
-                                return property + ' - ' + deviceModel + ': ' + prop['description'] + ' [' + prop['unit'] + ']';
-                            } else {
-                                return property + ' - ' + deviceModel + ': ' + prop['description'];
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return property + ' - (no info)';
+    private resolvePropertyDescription(propertyId: string): string {
+        if (!this.props.deviceAccess) return propertyId + "- (no info)";
+        const [device, property] = findPropertyDescription(this.props.deviceAccess, propertyId);
+        if (!device || !property) return propertyId + "- (no info)";
+        return `${propertyId} - ${device.model}: ${property.description}` + (property.unit ? `[${property.unit}]` : "");
     }
 
     private removeChart(id: string) {
         const charts = this.state.charts.filter((it) => it.id !== id);
-        localStorage.setItem('charts', JSON.stringify(charts.map((it) => ({
+        localStorage.setItem(`charts-${this.props.deviceAccess?.id}`, JSON.stringify(charts.map((it) => ({
             series: it.series
         }))));
         this.setState({
@@ -180,7 +162,7 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
             })),
         });
         properties.forEach((it) => it.checked = false);
-        localStorage.setItem('charts', JSON.stringify(charts.map((it) => ({
+        localStorage.setItem(`charts-${this.props.deviceAccess?.id}`, JSON.stringify(charts.map((it) => ({
             series: it.series
         }))));
         this.setState({

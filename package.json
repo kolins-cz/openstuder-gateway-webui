@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@openstuder/openstuder": "^0.3.3",
+    "@openstuder/openstuder": "^0.3.6",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.6",
     "@testing-library/user-event": "^12.8.3",
@@ -15,7 +15,10 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "react-toastify": "8.2.0",
+    "fscreen": "1.2.0",
+    "@types/fscreen": "1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

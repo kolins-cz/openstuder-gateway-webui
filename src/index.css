@@ -126,6 +126,21 @@ button.more:hover {
     opacity: 1;
 }
 
+div.toast-from {
+    font-size: 80%;
+    font-weight: bold;
+    color: rgb(var(--foreground));
+    margin-bottom: 4px;
+}
+
+img.toast-icon {
+    width: 28px;
+    height: 28px;
+    padding: 2px;
+    background-color: rgb(var(--background));
+    border-radius: 50%;
+}
+
 /*
  * Modal dialogs.
  */
@@ -145,15 +160,15 @@ div.modal {
     background-color: rgba(35, 35, 35, 0.9);
 }
 
-div.modal form {
+div.modal div.form {
     padding: 48px;
-    border: 1px solid rgba(var(--foreground), 0.5);
+    border: 1px solid rgba(var(--accent), 0.5);
     border-radius: 24px;
     background-color: rgb(var(--background));
 }
 
-div.modal form input,
-div.modal form select {
+div.modal div.form input,
+div.modal div.form select {
     display: inline-block;
     padding: 8px;
     margin: 8px;
@@ -167,11 +182,11 @@ div.modal form select {
     background-color: rgba(127, 127, 127, 0.25);
 }
 
-div.modal form input:invalid {
+div.modal div.form input:invalid {
     box-shadow: inset 100vw 0 var(--invalid-overlay);
 }
 
-div.modal form label.switch {
+div.modal div.form label.switch {
     margin: 8px;
     position: relative;
     display: inline-block;
@@ -179,18 +194,18 @@ div.modal form label.switch {
     height: 34px;
 }
 
-div.modal form label.switch.small {
+div.modal div.form label.switch.small {
     width: 30px;
     height: 17px;
 }
 
-div.modal form label.switch input {
+div.modal div.form label.switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
-div.modal form label.switch span.slider {
+div.modal div.form label.switch span.slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -204,7 +219,7 @@ div.modal form label.switch span.slider {
     border-radius: 34px;
 }
 
-div.modal form label.switch span.slider:before {
+div.modal div.form label.switch span.slider:before {
     position: absolute;
     content: "";
     height: 26px;
@@ -217,34 +232,34 @@ div.modal form label.switch span.slider:before {
     border-radius: 50%;
 }
 
-div.modal form label.switch.small span.slider:before {
+div.modal div.form label.switch.small span.slider:before {
     height: 13px;
     width: 13px;
     left: 1px;
     bottom: 1px;
 }
 
-div.modal form label.switch input:checked + span.slider {
+div.modal div.form label.switch input:checked + span.slider {
     background-color: rgb(var(--accent));
 }
 
-div.modal form label.switch input:focus + span.slider {
+div.modal div.form label.switch input:focus + span.slider {
     box-shadow: 0 0 1px #2196F3;
 }
 
-div.modal form label.switch input:checked + span.slider:before {
+div.modal div.form label.switch input:checked + span.slider:before {
     -webkit-transform: translateX(26px);
     -ms-transform: translateX(26px);
     transform: translateX(26px);
 }
 
-div.modal form label.switch.small input:checked + span.slider:before {
+div.modal div.form label.switch.small input:checked + span.slider:before {
     -webkit-transform: translateX(13px);
     -ms-transform: translateX(13px);
     transform: translateX(13px);
 }
 
-div.modal form button {
+div.modal div.form button {
     display: inline-block;
     margin: 16px 16px 0;
     padding: 8px;
@@ -252,7 +267,7 @@ div.modal form button {
     background-color: rgb(var(--accent));
 }
 
-div.modal form button:hover:enabled {
+div.modal div.form button:hover:enabled {
     transform: none;
 }
 
@@ -260,7 +275,7 @@ div.modal h1 {
     margin-bottom: 16px;
 }
 
-div.modal form table tbody tr {
+div.modal div.form table tbody tr {
     background-color: transparent !important;
 }
 
@@ -272,9 +287,9 @@ div.content div.spinner {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: absolute;
+    position: fixed;
     top: 0;
-    left: 0;
+    left: 100px;
     right: 0;
     bottom: 0;
     z-index: 3;
@@ -437,7 +452,7 @@ div.sidenav button {
     font-size: 11px;
 }
 
-div.sidenav button:hover {
+div.sidenav button:hover:enabled {
     transform: scale(1.1);
 }
 
@@ -470,6 +485,7 @@ div.dashboard {
     flex-flow: row;
     align-items: center;
     justify-content: center;
+    background-color: rgb(var(--background));
 }
 
 div.dashboard div.content {
@@ -502,6 +518,22 @@ div.dashboard div.content canvas {
     z-index: 2;
 }
 
+div.dashboard svg.enter-fullscreen {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 0;
+    z-index: 3;
+}
+
+div.dashboard svg.exit-fullscreen {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 0;
+    z-index: 3;
+}
+
 /*
  * Datalog component.
  */
@@ -512,7 +544,7 @@ div.datalogs {
 
 div.datalogs div.time-range {
     position: fixed;
-    z-index: 100000;
+    z-index: 5;
     top: 0;
     right: 0;
     margin: 0 0 8px 8px;
@@ -638,7 +670,7 @@ div.messages div.message-list {
     max-width: 1100px;
     margin: 16px auto;
     border: 1px solid rgb(var(--accent));
-    border-radius: 16px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -745,32 +777,11 @@ div.property-editor {
     margin: 48px;
 }
 
-div.property-editor div.device-access {
-    max-width: 1300px;
-    margin: 48px auto;
-}
-
-div.property-editor div.device-access header {
-    border-bottom: 3px solid rgb(var(--accent));
-    margin-bottom: 32px;
-}
-
-div.property-editor div.device-access header span.id {
-    font-size: 200%;
-    font-weight: bold;
-}
-
-div.property-editor div.device-access header span.driver {
-    padding-left: 1em;
-    font-style: italic;
-    color: rgb(var(--accent));
-}
-
 div.property-editor div.device {
     max-width: 1200px;
-    margin: 48px auto;
+    margin: 24px auto;
     border: 1px solid rgb(var(--accent));
-    border-radius: 16px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -792,17 +803,34 @@ div.property-editor div.device header span.model {
     color: rgb(var(--background));
 }
 
-div.property-editor div.device header div.collapse {
+div.property-editor div.device header div.button {
     position: absolute;
-    right: 8px;
-    top: 5px;
+    right: 40px;
+    top: 6px;
     width: 24px;
     height: 24px;
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    background-color: var(--selected-overlay);
+    padding: 0;
+    background: none;
     border-radius: 12px;
+}
+
+div.property-editor div.device header div.button:hover {
+    box-shadow: inset 100vw 0 var(--hover-overlay);
+}
+
+div.property-editor div.device header div.collapse {
+    position: absolute;
+    right: 13px;
+    top: 6px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: none;
+    border-radius: 12px;
+}
+
+div.property-editor div.device header div.collapse:hover {
+    box-shadow: inset 100vw 0 var(--hover-overlay);
 }
 
 div.property-editor table {
@@ -827,7 +855,7 @@ div.property-editor td.type {
 }
 
 div.property-editor td.id {
-    padding-right: 16px;
+    padding-right: 8px;
 }
 
 div.property-editor tr:nth-child(2n) {
@@ -857,5 +885,39 @@ div.property-editor button {
 }
 
 div.property-editor button:hover:enabled {
-    transform: scale(1.1);
+    transform: scale(1.05);
+}
+
+/*
+ * DeviceAccessSelector component.
+ */
+
+div.selector {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div.selector h1 {
+    color: rgb(var(--accent));
+    font-size: 32px;
+    font-weight: bold;
+    margin: 24px;
+}
+
+div.selector p {
+    max-width: 30vw;
+    color: rgb(var(--foreground));
+    font-size: 18px;
+    font-weight: bold;
+    opacity: 0.75;
+    margin: 8px;
+}
+
+div.selector a {
+    color: rgb(var(--accent));
+}
+div.selector button {
+    min-width: 20vh;
 }

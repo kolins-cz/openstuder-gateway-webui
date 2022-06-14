@@ -9,15 +9,23 @@ import {ReactComponent as DataLogIcon} from "./resources/icons/Datalog.svg"
 import {ReactComponent as MessagesIcon} from "./resources/icons/Messages.svg"
 import {ReactComponent as PropertiesIcon} from "./resources/icons/Properties.svg"
 import {ReactComponent as LogoutIcon} from "./resources/icons/Logout.svg"
+import {ReactComponent as InstallationIcon} from "./resources/icons/Installation.svg";
 import Messages from "./Messages";
 import Datalogs from "./Datalogs";
-import PropertiesEditor from "./PropertiesEditor";
+import PropertyEditor from "./PropertyEditor";
+import DeviceAccessSelector from "./DeviceAccessSelector";
+import {DeviceAccessDescription, GatewayDescription} from "./Description";
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import {Theme} from "./ThemeChooser";
+import ToastHelper from "./ToastHelper";
 
 enum View {
     Dashboard,
     Datalogs,
     Messages,
-    Properties
+    Properties,
+    Selector
 }
 
 interface AppProperties {
@@ -28,31 +36,37 @@ interface AppProperties {
 type AppState = {
     connected: boolean,
     currentView: View,
+    selectedDeviceAccessId?: string,
+    theme: Theme | undefined,
+    accentColor: string | undefined
 }
 
 class App extends SIGatewayParentComponent<AppProperties, AppState> {
     static defaultProps = {
-        host: window.location.hostname,
+        host: "openstuder.lan", // TODO: window.location.hostname,
         port: 1987,
         user: null,
         password: null
     };
 
     private readonly client: SIGatewayClient;
-    private description: any | undefined = undefined;
+    private description: GatewayDescription | undefined = undefined;
 
     private dashboard = React.createRef<Dashboard>();
     private datalogs = React.createRef<Datalogs>();
     private messages = React.createRef<Messages>();
-    private propertiesEditor = React.createRef<PropertiesEditor>();
+    private propertiesEditor = React.createRef<PropertyEditor>();
     private login = React.createRef<Login>();
-    
+
     constructor(props: AppProperties) {
         super(props);
         this.client = new SIGatewayClient();
         this.state = {
             connected: false,
             currentView: View.Dashboard,
+            selectedDeviceAccessId: undefined,
+            theme: undefined,
+            accentColor: undefined
         };
     }
 
@@ -81,27 +95,32 @@ class App extends SIGatewayParentComponent<AppProperties, AppState> {
                             <img className="logo" src={logo} alt="Logo"/>
                             <button
                                 className={this.state.currentView === View.Dashboard ? "active" : ""}
+                                disabled={this.state.selectedDeviceAccessId === undefined}
                                 onClick={() => this.changeView(View.Dashboard)}>
                                 <DashboardIcon/>
                                 <br/>Dashboard
                             </button>
                             <button
                                 className={this.state.currentView === View.Datalogs ? "active" : ""}
+                                disabled={this.state.selectedDeviceAccessId === undefined}
                                 onClick={() => this.changeView(View.Datalogs)}>
                                 <DataLogIcon/>
                                 <br/>Datalogs
                             </button>
                             <button
                                 className={this.state.currentView === View.Messages ? "active" : ""}
+                                disabled={this.state.selectedDeviceAccessId === undefined}
                                 onClick={() => this.changeView(View.Messages)}>
                                 <MessagesIcon/><br/>Messages
                             </button>
                             <button
                                 className={this.state.currentView === View.Properties ? "active" : ""}
+                                disabled={this.state.selectedDeviceAccessId === undefined}
                                 onClick={() => this.changeView(View.Properties)}>
                                 <PropertiesIcon/>
                                 <br/>Properties
                             </button>
+                            {this.renderDeviceAccessSelector()}
                             <button
                                 onClick={() => this.client.disconnect()}>
                                 <LogoutIcon/>
@@ -111,12 +130,38 @@ class App extends SIGatewayParentComponent<AppProperties, AppState> {
                     <div className="content">
                         {this.renderContent()}
                     </div>
+                    {this.state.currentView !== View.Dashboard &&
+                        <ToastContainer
+                            hideProgressBar={true}
+                            theme="colored"
+                            autoClose={10000}
+                            newestOnTop={true}/> }
                 </div>
             );
         } else {
             return (
-                <Login ref={this.login} host={this.props.host} port={this.props.port} client={this.client}/>
+                <div className="App">
+                    <Login ref={this.login} host={this.props.host} port={this.props.port} client={this.client}/>
+                    <ToastContainer
+                        hideProgressBar={true}
+                        theme="colored"
+                        autoClose={10000}
+                        newestOnTop={true}/>
+                </div>
             );
+        }
+    }
+
+    private renderDeviceAccessSelector() {
+        if ((this.description?.instances?.length || 0) > 1) {
+            return (
+                <button
+                    className={this.state.currentView === View.Selector ? "active" : ""}
+                    onClick={() => this.changeView(View.Selector)}>
+                    <InstallationIcon/>
+                    <br/>Select Installation
+                </button>
+            )
         }
     }
 
@@ -124,183 +169,102 @@ class App extends SIGatewayParentComponent<AppProperties, AppState> {
         switch (this.state.currentView) {
             case View.Dashboard:
                 return (
-                    <Dashboard ref={this.dashboard} client={this.client}/>
+                    <Dashboard ref={this.dashboard}
+                               client={this.client}
+                               deviceAccess={this.description?.instances.find((it) => it.id === this.state.selectedDeviceAccessId)}
+                               showDeviceAccess={(this.description?.instances.length || 0) > 1}/>
                 );
             case View.Datalogs:
                 return (
-                    <Datalogs ref={this.datalogs} client={this.client} description={this.description}/>
+                    <Datalogs ref={this.datalogs}
+                              client={this.client}
+                              deviceAccess={this.description?.instances.find((it) => it.id === this.state.selectedDeviceAccessId)}/>
                 );
             case View.Messages:
                 return (
-                    <Messages ref={this.messages} client={this.client}/>
+                    <Messages ref={this.messages}
+                              client={this.client}
+                              deviceAccess={this.description?.instances.find((it) => it.id === this.state.selectedDeviceAccessId)}/>
                 );
             case View.Properties:
                 return (
-                    <PropertiesEditor ref={this.propertiesEditor} client={this.client} model={this.description}/>
+                    <PropertyEditor ref={this.propertiesEditor}
+                                    client={this.client}
+                                    deviceAccess={this.description?.instances.find((it) => it.id === this.state.selectedDeviceAccessId)}/>
                 );
+
+            case View.Selector:
+                return (
+                    <DeviceAccessSelector
+                        deviceAccesses={this.description!.instances.map((it: DeviceAccessDescription) => it.id)}
+                        onSelected={this.onDeviceAccessSelected}
+                    />
+                )
         }
     }
 
     onConnected(accessLevel: SIAccessLevel, gatewayVersion: string) {
         super.onConnected(accessLevel, gatewayVersion);
-        this.setState({
-            currentView: View.Dashboard,
-            connected: true
-        });
         this.client.describe(undefined, undefined, undefined, [SIDescriptionFlags.INCLUDE_ACCESS_INFORMATION, SIDescriptionFlags.INCLUDE_DEVICE_INFORMATION, SIDescriptionFlags.INCLUDE_PROPERTY_INFORMATION])
     }
 
     onDisconnected() {
         super.onDisconnected();
+        this.description = undefined;
         this.setState({
-            connected: false
+            connected: false,
+            currentView: View.Dashboard,
+            selectedDeviceAccessId: undefined
         });
     }
 
     onDescription(status: SIStatus, description: string, id?: string) {
-        if (status === SIStatus.SUCCESS) {
-            this.description = JSON.parse(description);
+        if (id === undefined && status === SIStatus.SUCCESS) {
+            this.description = JSON.parse(description) as GatewayDescription;
+
+            switch (this.description.instances.length) {
+                case 0:
+                    this.setState({
+                        currentView: View.Selector,
+                        connected: true
+                    })
+                    break;
+
+                case 1:
+                    this.setState({
+                        currentView: View.Dashboard,
+                        connected: true,
+                        selectedDeviceAccessId: this.description.instances[0].id
+                    });
+                    break;
+
+                default:
+                    this.setState({
+                        currentView: View.Selector,
+                        connected: true,
+                        selectedDeviceAccessId: undefined
+                    });
+            }
         }
     }
 
     onError(reason: string): void {
+        ToastHelper.error(undefined, reason);
         super.onError(reason);
-        console.log(reason);
+    }
+
+    private onDeviceAccessSelected = (deviceAccess: string) => {
+        this.setState({
+            currentView: View.Dashboard,
+            selectedDeviceAccessId: deviceAccess
+        })
     }
 
     public changeView(newView: View) {
-        this.setState({currentView: newView});
+        this.setState({
+            currentView: newView
+        });
     }
-    
-    /*public renderConnected(){
-        return (
-            <div className="App">
-              {this.renderSidebar()}
-              <div className="content">{this.renderContent()}</div>
-            </div>
-        );
-      }
-
-      public renderSidebar(){
-        let varioTrackMCSubLink;
-        let varioTrackVT65SubLink;
-        let xTenderXTSSubLink;
-        let xTenderMCSubLink;
-        this.state.devices.devices.map(device=>{
-          if(device.model.includes("VarioTrack VT-65")){
-            varioTrackVT65SubLink=<a className="subLink" href={"#"+device.model} onClick={()=>this.changeView(View.VarioTrack)}>-{device.model}</a>
-          }
-          if(device.model.includes("Xtender XTS")){
-            xTenderXTSSubLink=<a className="subLink" href={"#"+device.model} onClick={()=>this.changeView(View.XTender)}>-{device.model}</a>
-          }
-          if(device.model.includes("VarioTrack multicast")){
-            varioTrackMCSubLink=<a className="subLink" href={"#"+device.model} onClick={()=>this.changeView(View.VarioTrack)}>-{device.model}</a>
-          }
-          if(device.model.includes("Xtender multicast")){
-            xTenderMCSubLink=<a className="subLink" href={"#"+device.model} onClick={()=>this.changeView(View.XTender)}>-{device.model}</a>
-          }
-        });
-        return(
-            <div>
-              <div className="sidenav">
-                <img className="logo" src={logo}/>
-                <a className="active" href="#" onClick={()=>this.changeView(View.Dashboard)}><img src={dashboardIcon}/><br/>Dashboard</a>
-                <a href="#"><img src={datalogIcon}/><br/>Datalogs</a>
-                <a href="#" onClick={()=>this.changeView(View.Messages)}><img src={messagesIcon}/><br/>Messages</a>
-                <a href="#"><img src={remoteIcon}/><br/>Remote control</a>
-                <a href="#"><img src={propertiesIcon}/><br/>Properties</a>
-              </div>
-            </div>
-        );
-      }
-
-      public renderContent(){
-        switch(this.state.currentView){
-          case View.Dashboard:
-            return(
-                <div>{this.renderSystemInfo()}</div>
-            );
-          case View.Messages:
-            return(
-                <div>{this.renderEventsRecord()}</div>
-            );
-          case View.Battery:
-            return(
-                <div>{this.renderBattery()}</div>
-            );
-          case View.VarioTrack:
-            return(
-                <div>{this.renderVarioTrack()}</div>
-            );
-          case View.XTender:
-            return(
-                <div>{this.renderXTender()}</div>
-            );
-        }
-      }
-
-      public renderSystemInfo(){
-        let batteryDevice = this.state.devices.findDevice("bat");
-        let varioTrackDevice = this.state.devices.findDevice("vts");
-        let xTenderDevice = this.state.devices.findDevice("xts");
-        return(
-            <SystemInfo  battery={batteryDevice} varioTrack={varioTrackDevice} xTender={xTenderDevice}/>
-        );
-      }
-
-      public renderEventsRecord(){
-        return(
-            <div>
-              <DeviceMessagesRender messages={this.state.messages} onSubmit={(dateFrom, dateTo) => this.onSubmitReadMessagesTask(dateFrom,dateTo)}/>
-            </div>
-        );
-      }
-
-      public renderBattery(){
-        let batteryDevice:Device|undefined;
-        this.state.devices.devices.map(device=>{
-          if(device.model==="BSP"){
-            batteryDevice=device;
-          }
-        });
-        if(batteryDevice) {
-          return (
-              <DeviceRender device={batteryDevice} onClick={(id:string)=>this.onClick(id)} onSubmit={(id,value)=>this.onSubmitWrittenTask(id,value)}
-                            onSubscribeTask={(id,subscribing)=>this.onSubscribeTask(id,subscribing)}/>
-          );
-        }
-        else{
-          return(
-              <div>No BSP device found</div>
-          );
-        }
-      }
-
-      public renderVarioTrack(){
-        return(
-            <div>
-              {this.state.devices.devices.map(device=>{
-                if(device.model.includes("VarioTrack")){
-                  return <DeviceRender device={device} onClick={(id:string)=>this.onClick(id)} onSubmit={()=>this.onSubmitWrittenTask}
-                                       onSubscribeTask={(id,subscribing)=>this.onSubscribeTask(id,subscribing)}/>
-                }
-              })}
-            </div>
-        );
-      }
-
-      public renderXTender(){
-        return(
-            <div>
-              {this.state.devices.devices.map(device=>{
-                if(device.model.includes("Xtender")){
-                  return <DeviceRender device={device} onClick={(id:string)=>this.onClick(id)} onSubmit={()=>this.onSubmitWrittenTask}
-                                       onSubscribeTask={(id,subscribing)=>this.onSubscribeTask(id,subscribing)}/>
-                }
-              })}
-            </div>
-        );
-      }*/
 }
 
 export default App;
