@@ -9,28 +9,28 @@ class ToastHelper {
     public static info(from: string | undefined, message: string) {
         console.info(from + ": " + message);
         toast.info(ToastHelper.createToastMessage(from, message), {
-            icon: <img className="toast-icon" src={NotificationIcon}/>
+            icon: <img className="toast-icon" src={NotificationIcon} alt="info"/>
         });
     }
 
     public static warning(from: string | undefined, message: string) {
         console.warn(from + ": " + message);
         toast.warning(ToastHelper.createToastMessage(from, message), {
-            icon: <img className="toast-icon" src={WarningIcon}/>
+            icon: <img className="toast-icon" src={WarningIcon} alt="warning"/>
         });
     }
 
     public static error(from: string |undefined, message: string) {
         console.error(from + ": " + message);
         toast.error(ToastHelper.createToastMessage(from, message), {
-            icon: <img className="toast-icon" src={ErrorIcon}/>
+            icon: <img className="toast-icon" src={ErrorIcon} alt="error"/>
         });
     }
 
     public static halted(from: string |undefined, message: string) {
         console.error(from + ": " + message);
         toast.error(ToastHelper.createToastMessage(from, message), {
-            icon: <img className="toast-icon" src={HaltedIcon}/>
+            icon: <img className="toast-icon" src={HaltedIcon} alt="halted"/>
         });
     }
 

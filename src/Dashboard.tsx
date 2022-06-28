@@ -20,7 +20,7 @@ interface DashboardProperties {
     showDeviceAccess: boolean
 }
 
-class  DashboardState {
+class DashboardState {
     fullscreen: boolean = false;
 }
 
@@ -103,8 +103,8 @@ class Dashboard extends SIGatewayComponent<DashboardProperties, DashboardState> 
                     <canvas className="dashboard" ref={this.canvas} onClick={this.onCanvasClicked}/>
                     <Spinner ref={this.spinner}/>
                     {
-                        fscreen.fullscreenEnabled && (this.state.fullscreen &&
-                            <ExitFullscreen className="exit-fullscreen" onClick={this.toggleFullscreen}/> ||
+                        fscreen.fullscreenEnabled && ((this.state.fullscreen &&
+                            <ExitFullscreen className="exit-fullscreen" onClick={this.toggleFullscreen}/>) ||
                             <EnterFullscreen className="enter-fullscreen" onClick={this.toggleFullscreen}/>
                         )
                     }

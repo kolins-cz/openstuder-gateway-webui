@@ -6,10 +6,12 @@ import WarningIcon from './resources/icons/Warning.svg';
 import ErrorIcon from './resources/icons/Error.svg';
 import HaltedIcon from './resources/icons/Halted.svg';
 import {DeviceAccessDescription} from "./Description";
+import StateStorage from "./StateStorage";
 
 interface MessagesProperties {
     client: SIGatewayClient,
-    deviceAccess?: DeviceAccessDescription
+    deviceAccess?: DeviceAccessDescription,
+    stateStorage: StateStorage
 }
 
 type Message = SIDeviceMessage & { highlighted: boolean }
@@ -38,10 +40,17 @@ class Messages extends SIGatewayComponent<MessagesProperties, MessagesState> {
     }
 
     public componentDidMount() {
-        this.setState({
-            messages: []
+        const state = this.props.stateStorage.getState<MessagesState>("messages", () => {
+            return new MessagesState();
         });
-        this.loadMore();
+        this.setState(state);
+        if (state.interval === MessagesTimeInterval.None) {
+            this.loadMore();
+        }
+    }
+
+    componentWillUnmount() {
+        this.props.stateStorage.saveState("messages",  this.state);
     }
 
     public render() {

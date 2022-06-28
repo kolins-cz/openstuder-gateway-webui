@@ -8,10 +8,12 @@ import {ReactComponent as CollapseIcon} from "./resources/icons/Collapse.svg";
 import {ReactComponent as ExpandIcon} from "./resources/icons/Expand.svg";
 import Spinner from "./Spinner";
 import {toast} from "react-toastify";
+import StateStorage from "./StateStorage";
 
 interface PropertyEditorProperties {
     client: SIGatewayClient;
     deviceAccess?: DeviceAccessDescription;
+    stateStorage: StateStorage
 }
 
 class PropertyEditor extends SIGatewayComponent<PropertyEditorProperties, {}> {

@@ -1,5 +1,14 @@
 import React from "react";
-import {SIAccessLevel, SIDeviceFunctions, SIDeviceMessage, SIGatewayClientCallbacks, SIPropertyReadResult, SIStatus, SISubscriptionsResult} from "@openstuder/openstuder";
+import {
+    SIAccessLevel,
+    SIDeviceFunctions,
+    SIDeviceMessage,
+    SIExtensionStatus,
+    SIGatewayClientCallbacks,
+    SIPropertyReadResult,
+    SIStatus,
+    SISubscriptionsResult
+} from "@openstuder/openstuder";
 import ToastHelper from "./ToastHelper";
 
 class SIGatewayComponent<P, S> extends React.Component<P, S> implements SIGatewayClientCallbacks {
@@ -32,6 +41,7 @@ class SIGatewayComponent<P, S> extends React.Component<P, S> implements SIGatewa
     onPropertyUnsubscribed(status: SIStatus, propertyId: string): void {}
     onPropertyUpdated(propertyId: string, value: any): void {}
     onPropertyWritten(status: SIStatus, propertyId: string): void {}
+    onExtensionCalled(extension: string, command: string, status: SIExtensionStatus, parameters: Map<string, string>, body: string): void {}
 }
 
 export default SIGatewayComponent;

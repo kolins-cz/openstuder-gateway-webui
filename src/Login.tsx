@@ -47,12 +47,7 @@ class Login extends SIGatewayComponent<LoginProperties, {}> {
         this.password.current!.disabled = true;
         this.button.current!.disabled = true;
 
-        let host = this.props.host;
-        if (!host.startsWith('ws://')) {
-            host = 'ws://' + host;
-        }
-
-        this.props.client.connect(host, this.props.port, this.username.current?.value, this.password.current?.value);
+        this.props.client.connect(this.props.host, this.props.port, this.username.current?.value, this.password.current?.value);
     };
 
     onError(reason: string) {

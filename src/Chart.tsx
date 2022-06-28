@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as Highcharts from 'highcharts';
 import {Chart as ChartObject} from 'highcharts';
+import {ReactComponent as DeleteIcon} from "./resources/icons/Delete.svg"
 
 // noinspection TsLint
 const Boost = require('highcharts/modules/boost');
@@ -107,26 +108,17 @@ class Chart extends React.Component<ChartProperties, {}> {
                 description: it.description,
                 data: []
             }))
-        }, (chart) => {
-            chart.renderer.button('&nbsp;x&nbsp;',chart.chartWidth - 35, 0, () => {if (this.props.onClose) this.props.onClose()}, {
-                style: {
-                    color: 'rgb(var(--accent))'
-                },
-                fill: 'rgb(var(--background))',
-                stroke: 'rgb(var(--accent))',
-                zIndex: 200
-            }, {
-                style: {
-                    color: 'rgb(var(--background))'
-                },
-                fill: 'rgb(var(--accent))'
-            }, undefined, undefined, "circle", true).add();
         });
     }
 
     public render() {
         return (
-            <div className={this.props.className} id={this.props.id}/>
+            <div className="chart-container">
+                <div className={this.props.className} id={this.props.id}/>
+                <div className="delete-chart">
+                    <DeleteIcon onClick={() => {if (this.props.onClose) this.props.onClose()}}/>
+                </div>
+            </div>
         );
     }
 

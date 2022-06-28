@@ -1,14 +1,20 @@
 import React from 'react'
 import SIGatewayComponent from "./SIGatewayComponent";
-import {SIGatewayClient, SIStatus} from "@openstuder/openstuder";
+import {
+    SIGatewayClient,
+    SIStatus
+} from "@openstuder/openstuder";
 import DatalogsRangeSelect from "./DatalogsRangeSelect";
 import Chart, {ChartProperty} from "./Chart";
 import {DeviceAccessDescription, findPropertyDescription} from "./Description";
-import AddIcon from "./resources/icons/Add.svg";
+import AddIcon from "./resources/icons/AddDatalog.svg";
+import StateStorage from "./StateStorage";
+import Spinner from "./Spinner";
 
 interface DatalogsProperties {
     client: SIGatewayClient
-    deviceAccess: DeviceAccessDescription | undefined
+    deviceAccess: DeviceAccessDescription | undefined,
+    stateStorage: StateStorage
 }
 
 type DatalogsChart = {
@@ -19,7 +25,7 @@ type DatalogsChart = {
 }
 
 class DatalogsState {
-    constructor(from: Date, to: Date, properties: Array<string>, charts: Array<DatalogsChart>) {
+    constructor(from: Date, to: Date, properties: Array<string> = [], charts: Array<DatalogsChart> = []) {
         this.from = from;
         this.to = to;
         this.properties = properties;
@@ -33,7 +39,10 @@ class DatalogsState {
 }
 
 class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
-    private propertiesSelector: HTMLDivElement | null = null;
+    private addChartDialog: HTMLDivElement | null = null;
+    private selectedProperties: HTMLDivElement | null = null;
+    private spinner: Spinner | null = null;
+    private loadingProperties = new Set<string>();
 
     constructor(props: DatalogsProperties) {
         super(props);
@@ -45,24 +54,14 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
         let from = new Date();
         from.setTime(to.getTime() - 24 * 60 * 60 * 1000);
 
-        let charts = new Array<DatalogsChart>();
-        const currentChartsJson = localStorage.getItem(`charts-${this.props.deviceAccess?.id}`);
-        if (currentChartsJson) {
-            const currentCharts = JSON.parse(currentChartsJson) as Array<{series: Array<ChartProperty>}>;
-            charts = currentCharts.map((it, i) => ({
-                id: 'chart' + i,
-                isNew: true,
-                ref: null,
-                series: it.series
-            }));
-        }
-
-        this.state = new DatalogsState(from, to, [], charts);
+        this.state = new DatalogsState(from, to);
     }
 
     public componentDidMount() {
-        this.props.client.readDatalogProperties();
-        this.state.charts.forEach((it) => it.ref?.setRange(this.state.from, this.state.to));
+        this.setState(this.props.stateStorage.getState<DatalogsState>("datalogs", () => {
+            this.props.client.readDatalogProperties();
+            return this.state
+        }));
     }
 
     public componentDidUpdate(prevProps: Readonly<DatalogsProperties>, prevState: Readonly<DatalogsState>, snapshot?: any) {
@@ -79,6 +78,11 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
         }
     }
 
+
+    componentWillUnmount() {
+        this.props.stateStorage.saveState<DatalogsState>("datalogs", this.state);
+    }
+
     public render() {
         return (
             <div className="datalogs">
@@ -89,10 +93,12 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
                     });
                 }}/>
                 {this.state.charts.map((chart) => (
-                    <Chart key={chart.id} id={chart.id} className="chart" ref={(it) => chart.ref = it} series={chart.series} onClose={() => this.removeChart(chart.id)}/>
+                    <Chart key={chart.id} id={chart.id} className="chart" ref={(it) => chart.ref = it}
+                           series={chart.series} onClose={() => this.removeChart(chart.id)}/>
                 ))}
-                <div className="add">
-                    <div ref={(it) => this.propertiesSelector = it} className="properties">
+                <img src={AddIcon} alt="add" onClick={this.showAddChartDialog}/>
+                <div ref={(it) => this.addChartDialog = it} className="modal">
+                    <div ref={(it) => this.selectedProperties = it} className="form">
                         {this.state.properties.map((property) => (
                                 <div key={property}>
                                     <input type="checkbox" title={property}/>
@@ -100,9 +106,12 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
                                 </div>
                             )
                         )}
+                        <br/>
+                        <button onClick={this.addChart}>Ok</button>
+                        <button onClick={this.cancelAddChart}>Cancel</button>
                     </div>
-                    <img src={AddIcon} alt="add" onClick={this.addChart}/>
                 </div>
+                <Spinner ref={(it) => this.spinner = it}/>
             </div>
         );
     }
@@ -117,6 +126,10 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
     }
 
     onDatalogRead(status: SIStatus, propertyId: string, count: number, values: string) {
+        this.loadingProperties.delete(propertyId);
+        if (this.loadingProperties.size === 0) {
+            this.spinner?.hide();
+        }
         if (status === SIStatus.SUCCESS) {
             const data = values.split('\n').map((it) => {
                 const components = it.split(',');
@@ -139,16 +152,19 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
 
     private removeChart(id: string) {
         const charts = this.state.charts.filter((it) => it.id !== id);
-        localStorage.setItem(`charts-${this.props.deviceAccess?.id}`, JSON.stringify(charts.map((it) => ({
-            series: it.series
-        }))));
         this.setState({
             charts: charts
         });
     }
 
+    private showAddChartDialog = () => {
+        this.addChartDialog?.style.setProperty('display', 'flex');
+    }
+
     private addChart = () => {
-        const properties = Array.from(this.propertiesSelector?.getElementsByTagName('input') as HTMLCollectionOf<HTMLInputElement>).filter((it) => it.checked);
+        this.addChartDialog?.style.setProperty('display', 'none');
+
+        const properties = Array.from(this.selectedProperties?.getElementsByTagName('input') as HTMLCollectionOf<HTMLInputElement>).filter((it) => it.checked);
         if (properties.length === 0) return;
 
         let charts = this.state.charts;
@@ -162,18 +178,23 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
             })),
         });
         properties.forEach((it) => it.checked = false);
-        localStorage.setItem(`charts-${this.props.deviceAccess?.id}`, JSON.stringify(charts.map((it) => ({
-            series: it.series
-        }))));
         this.setState({
             charts: charts
         });
     };
 
+    private cancelAddChart = () => {
+        this.addChartDialog?.style.setProperty('display', 'none');
+    }
+
     private updateData(charts: Array<DatalogsChart>) {
-        let properties = new Set<string>();
-        charts.forEach((chart) => chart.series.forEach((it) => properties.add(it.property)));
-        properties.forEach((it) => this.props.client.readDatalog(it, this.state.from, this.state.to));
+        charts.forEach((chart) => chart.series.forEach((it) => this.loadingProperties.add(it.property)));
+
+        if (this.loadingProperties.size > 0) {
+            this.spinner?.show(1000);
+        }
+
+        this.loadingProperties.forEach((it) => this.props.client.readDatalog(it, this.state.from, this.state.to));
     }
 }
 

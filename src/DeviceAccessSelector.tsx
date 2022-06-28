@@ -45,7 +45,7 @@ class DeviceAccessSelector extends SIGatewayComponent<DeviceAccessSelectorProper
                     <div>
                         <p>Select installation:</p>
                         {this.props.deviceAccesses.map((deviceAccess) => (
-                            <button onClick={() => this.props.onSelected(deviceAccess)}>{deviceAccess}</button>
+                            <button id={deviceAccess} onClick={() => this.props.onSelected(deviceAccess)}>{deviceAccess}</button>
                         ))}
                     </div>
                 )

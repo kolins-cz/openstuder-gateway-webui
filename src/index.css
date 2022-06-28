@@ -109,6 +109,24 @@ button {
     background-color: rgb(var(--accent));
 }
 
+button.medium {
+    display: block;
+    margin: 8px auto;
+    padding: 4px;
+    outline: none;
+    border-radius: 4px;
+    color: rgb(var(--background));
+    font-size: 16px;
+    text-align: center;
+    border: 1px solid var(--hover-overlay);
+    background-color: rgb(var(--accent));
+}
+
+button.inline {
+    display: inline;
+    margin-right: 8px;
+}
+
 button:enabled:hover {
     box-shadow: inset 100vw 0 var(--hover-overlay);
 }
@@ -126,6 +144,10 @@ button.more:hover {
     opacity: 1;
 }
 
+/*
+ * Toasts.
+ */
+
 div.toast-from {
     font-size: 80%;
     font-weight: bold;
@@ -137,7 +159,8 @@ img.toast-icon {
     width: 28px;
     height: 28px;
     padding: 2px;
-    background-color: rgb(var(--background));
+    margin-right: 4px;
+    background-color: rgba(var(--background), 0.9);
     border-radius: 50%;
 }
 
@@ -160,15 +183,24 @@ div.modal {
     background-color: rgba(35, 35, 35, 0.9);
 }
 
-div.modal div.form {
+/*
+ * Forms.
+ */
+
+div.form {
+    margin: 8px;
     padding: 48px;
     border: 1px solid rgba(var(--accent), 0.5);
     border-radius: 24px;
     background-color: rgb(var(--background));
 }
 
-div.modal div.form input,
-div.modal div.form select {
+div.form h1 {
+    font-weight: bold;
+}
+
+div.form input,
+div.form select {
     display: inline-block;
     padding: 8px;
     margin: 8px;
@@ -182,11 +214,18 @@ div.modal div.form select {
     background-color: rgba(127, 127, 127, 0.25);
 }
 
-div.modal div.form input:invalid {
+div.form input.medium,
+div.form select.medium {
+    padding: 4px;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+div.form input:invalid {
     box-shadow: inset 100vw 0 var(--invalid-overlay);
 }
 
-div.modal div.form label.switch {
+div.form label.switch {
     margin: 8px;
     position: relative;
     display: inline-block;
@@ -194,18 +233,23 @@ div.modal div.form label.switch {
     height: 34px;
 }
 
-div.modal div.form label.switch.small {
+div.form label.switch.small {
     width: 30px;
     height: 17px;
 }
 
-div.modal div.form label.switch input {
+div.form label.switch.medium {
+    width: 40px;
+    height: 24px;
+}
+
+div.form label.switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
-div.modal div.form label.switch span.slider {
+div.form label.switch span.slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -219,7 +263,7 @@ div.modal div.form label.switch span.slider {
     border-radius: 34px;
 }
 
-div.modal div.form label.switch span.slider:before {
+div.form label.switch span.slider:before {
     position: absolute;
     content: "";
     height: 26px;
@@ -232,34 +276,47 @@ div.modal div.form label.switch span.slider:before {
     border-radius: 50%;
 }
 
-div.modal div.form label.switch.small span.slider:before {
+div.form label.switch.small span.slider:before {
     height: 13px;
     width: 13px;
     left: 1px;
     bottom: 1px;
 }
 
-div.modal div.form label.switch input:checked + span.slider {
+div.form label.switch.medium span.slider:before {
+    height: 20px;
+    width: 20px;
+    left: 1px;
+    bottom: 1px;
+}
+
+div.form label.switch input:checked + span.slider {
     background-color: rgb(var(--accent));
 }
 
-div.modal div.form label.switch input:focus + span.slider {
+div.form label.switch input:focus + span.slider {
     box-shadow: 0 0 1px #2196F3;
 }
 
-div.modal div.form label.switch input:checked + span.slider:before {
+div.form label.switch input:checked + span.slider:before {
     -webkit-transform: translateX(26px);
     -ms-transform: translateX(26px);
     transform: translateX(26px);
 }
 
-div.modal div.form label.switch.small input:checked + span.slider:before {
+div.form label.switch.small input:checked + span.slider:before {
     -webkit-transform: translateX(13px);
     -ms-transform: translateX(13px);
     transform: translateX(13px);
 }
 
-div.modal div.form button {
+div.form label.switch.medium input:checked + span.slider:before {
+    -webkit-transform: translateX(15px);
+    -ms-transform: translateX(15px);
+    transform: translateX(15px);
+}
+
+div.form button {
     display: inline-block;
     margin: 16px 16px 0;
     padding: 8px;
@@ -267,7 +324,7 @@ div.modal div.form button {
     background-color: rgb(var(--accent));
 }
 
-div.modal div.form button:hover:enabled {
+div.form button:hover:enabled {
     transform: none;
 }
 
@@ -275,7 +332,7 @@ div.modal h1 {
     margin-bottom: 16px;
 }
 
-div.modal div.form table tbody tr {
+div.form table tbody tr {
     background-color: transparent !important;
 }
 
@@ -556,10 +613,21 @@ div.datalogs div.time-range div.summary {
     display: flex;
     padding: 8px;
     align-items: center;
-    background-color: rgb(var(--accent));
+    color: rgb(var(--accent));
+    background-color: rgb(var(--background));
+    --icon-color: var(--accent);
 }
 
-div.datalogs div.time-range div.summary div {
+div.datalogs div.time-range div.expanded {
+    display: flex;
+    padding: 8px;
+    align-items: center;
+    background-color: rgb(var(--accent));
+    --icon-color: var(--background);
+}
+
+div.datalogs div.time-range div.summary div,
+div.datalogs div.time-range div.expanded div {
     font-weight: bold;
     margin: 4px 8px;
 }
@@ -656,6 +724,20 @@ div.datalogs div.add div.properties::-webkit-scrollbar-thumb {
 div.datalogs div.add img {
     height: 64px;
     margin: 8px 32px;
+}
+
+div.datalogs div.chart-container {
+    position: relative;
+    border: 1px solid rgba(var(--foreground), 0.1);
+    background: rgba(var(--foreground), 0.02);
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+div.datalogs div.delete-chart {
+    position: absolute;
+    top: 8px;
+    right: 8px;
 }
 
 /*
@@ -877,7 +959,7 @@ div.property-editor td.actions {
     padding-right: 8px;
 }
 
-div.property-editor button {
+div.property-editor table button {
     display: inline-block;
     margin: 0;
     padding: 0;
@@ -892,9 +974,10 @@ div.property-editor button:hover:enabled {
  * DeviceAccessSelector component.
  */
 
-div.selector {
+div.selector, div.wifi-config {
     height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -920,4 +1003,113 @@ div.selector a {
 }
 div.selector button {
     min-width: 20vh;
+}
+
+/*
+ * WifiConfig component.
+ */
+
+hr {
+    border: none;
+    border-top: 1px solid rgb(var(--accent));
+}
+
+div.wifi-config div.form {
+    padding: 24px;
+}
+
+div.wifi-config div.form-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+div.wifi-config div.form-row div {
+    margin-right: 20px;
+}
+
+div.wifi-config div.label {
+    color: rgb(var(--accent));
+}
+
+div.wifi-config div.network {
+    min-width: 200px;
+    background-color: rgb(var(--accent));
+    margin: 4px;
+    padding:8px;
+    border-radius: 8px;
+}
+
+div.wifi-config div.network div.title {
+    font-weight: bold;
+    color: rgb(var(--background));
+}
+
+div.wifi-config div.network div.props {
+    font-style: italic;
+    font-size: 75%;
+}
+
+/*
+ * User Management
+ */
+
+div.user-management div.user-list {
+    max-width: 600px;
+    margin: 32px auto;
+    border: 1px solid rgb(var(--accent));
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+div.user-management div.button {
+    float: right;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+}
+
+div.user-management table button {
+    display: inline-block;
+    float: right;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
+div.user-management table {
+    text-align: left;
+    vertical-align: center;
+    width: 100%;
+}
+
+div.user-management table thead {
+    position: relative;
+    margin: 0;
+    padding: 4px;
+    background-color: rgb(var(--accent));
+}
+
+div.user-management thead th {
+    padding: 4px 12px;
+    font-weight: bold;
+    color: rgb(var(--background));
+}
+
+div.user-management tr {
+    margin: 2px;
+    padding: 0;
+}
+
+div.user-management td {
+    min-width: 0;
+    margin: 0;
+    padding: 0 12px;
+}
+
+div.user-management td:last-child {
+    padding: 0 4px;
 }

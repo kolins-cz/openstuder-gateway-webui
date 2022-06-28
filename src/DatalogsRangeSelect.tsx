@@ -41,7 +41,7 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
     public render() {
         return (
             <div className="time-range">
-                <div className="summary" onClick={() => this.toggleExpanded()}>
+                <div className={this.state.expanded ? "expanded" : "summary"} onClick={() => this.toggleExpanded()}>
                     <TimeRangeIcon/>
                     <div>{this.state.from.getHours() === 0 && this.state.from.getMinutes() === 0 ? this.state.from.toLocaleDateString() : this.state.from.toLocaleDateString() + ' ' + this.state.from.toLocaleTimeString([], {
                         hour: '2-digit',
