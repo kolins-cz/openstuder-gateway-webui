@@ -25,7 +25,7 @@ type DatalogsChart = {
 }
 
 class DatalogsState {
-    constructor(from: Date, to: Date, properties: Array<string> = [], charts: Array<DatalogsChart> = []) {
+    constructor(from: Date, to: Date | string, properties: Array<string> = [], charts: Array<DatalogsChart> = []) {
         this.from = from;
         this.to = to;
         this.properties = properties;
@@ -33,7 +33,7 @@ class DatalogsState {
     }
 
     from: Date;
-    to: Date;
+    to: Date | string;
     properties: Array<string>;
     charts: Array<DatalogsChart>;
 }
@@ -47,12 +47,13 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
     constructor(props: DatalogsProperties) {
         super(props);
 
-        let to = new Date();
-        to.setSeconds(0);
-        to.setMilliseconds(0);
+        let to = 'now';
 
         let from = new Date();
-        from.setTime(to.getTime() - 24 * 60 * 60 * 1000);
+        from.setHours(0);
+        from.setMinutes(0);
+        from.setSeconds(0);
+        from.setMilliseconds(0);
 
         this.state = new DatalogsState(from, to);
     }
@@ -65,13 +66,14 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
     }
 
     public componentDidUpdate(prevProps: Readonly<DatalogsProperties>, prevState: Readonly<DatalogsState>, snapshot?: any) {
-        if (prevState.from !== this.state.from && prevState.to !== this.state.to) {
-            this.state.charts.forEach((it) => it.ref?.setRange(this.state.from, this.state.to));
+        console.log(this.state.to);
+        if (prevState.from !== this.state.from || prevState.to !== this.state.to || this.state.to === 'now') {
+            this.state.charts.forEach((it) => it.ref?.setRange(this.state.from, this.state.to instanceof Date ? this.state.to : new Date()));
             this.updateData(this.state.charts);
         } else {
             const newCharts = this.state.charts.filter((it) => it.isNew);
             newCharts.forEach((it) => {
-                it.ref?.setRange(this.state.from, this.state.to);
+                it.ref?.setRange(this.state.from, this.state.to instanceof  Date ? this.state.to : new Date());
                 it.isNew = false;
             });
             this.updateData(newCharts);
@@ -80,13 +82,14 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
 
 
     componentWillUnmount() {
+        console.log(this.state.to);
         this.props.stateStorage.saveState<DatalogsState>("datalogs", this.state);
     }
 
     public render() {
         return (
             <div className="datalogs">
-                <DatalogsRangeSelect onRangeChanged={(from, to) => {
+                <DatalogsRangeSelect from={this.state.from} to={this.state.to} onRangeChanged={(from, to) => {
                     this.setState({
                         from: from,
                         to: to
@@ -101,8 +104,10 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
                     <div ref={(it) => this.selectedProperties = it} className="form">
                         {this.state.properties.map((property) => (
                                 <div key={property}>
-                                    <input type="checkbox" title={property}/>
-                                    <label htmlFor={property}>{this.resolvePropertyDescription(property)}</label>
+                                    <label className="checkbox-container">{this.resolvePropertyDescription(property)}
+                                        <input type="checkbox" title={property}/>
+                                        <span className="checkbox-mark"></span>
+                                    </label>
                                 </div>
                             )
                         )}
@@ -194,7 +199,7 @@ class Datalogs extends SIGatewayComponent<DatalogsProperties, DatalogsState> {
             this.spinner?.show(1000);
         }
 
-        this.loadingProperties.forEach((it) => this.props.client.readDatalog(it, this.state.from, this.state.to));
+        this.loadingProperties.forEach((it) => this.props.client.readDatalog(it, this.state.from, this.state.to instanceof  Date ? this.state.to : new Date()));
     }
 }
 

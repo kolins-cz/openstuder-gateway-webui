@@ -1,19 +1,22 @@
 import React from 'react'
 import {ReactComponent as TimeRangeIcon} from "./resources/icons/Timerange.svg";
+import {ReactComponent as RefreshIcon} from "./resources/icons/Referesh.svg";
 
 interface DatalogsRangeSelectProperties {
-    onRangeChanged: (from: Date, to: Date) => void
+    onRangeChanged: (from: Date, to: Date | string) => void,
+    from: Date,
+    to: Date | string
 }
 
 class DatalogsRangeSelectState {
-    constructor(from: Date, to: Date) {
+    constructor(from: Date, to: Date | string) {
         this.from = from;
         this.to = to;
         this.expanded = false;
     }
 
     from: Date;
-    to: Date;
+    to: Date | string;
     expanded: boolean;
 }
 
@@ -25,15 +28,38 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
     private toDate: HTMLInputElement | null = null;
     private toTime: HTMLInputElement | null = null;
 
+    private toAsDate(): Date {
+        if (this.state.to instanceof Date) {
+            return this.state.to;
+        } else {
+            return new Date();
+        }
+    }
+
+    private fromAsString(): string {
+        return this.state.from.getHours() === 0 && this.state.from.getMinutes() === 0 ? this.state.from.toLocaleDateString() : this.state.from.toLocaleDateString() + ' ' + this.state.from.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    private toAsString(): string {
+        if (this.state.to instanceof Date) {
+            return this.state.to.getHours() === 0 && this.state.to.getMinutes() === 0 ? this.state.to.toLocaleDateString() : this.state.to.toLocaleDateString() + ' ' + this.state.to.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } else {
+            return this.state.to;
+        }
+    }
+
     constructor(props: DatalogsRangeSelectProperties) {
         super(props);
 
-        let to = new Date();
-        to.setSeconds(0);
-        to.setMilliseconds(0);
+        let to = props.to
 
-        let from = new Date();
-        from.setTime(to.getTime() - 24 * 60 * 60 * 1000);
+        let from = props.from
 
         this.state = new DatalogsRangeSelectState(from, to);
     }
@@ -41,17 +67,20 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
     public render() {
         return (
             <div className="time-range">
-                <div className={this.state.expanded ? "expanded" : "summary"} onClick={() => this.toggleExpanded()}>
+                <div className={this.state.expanded ? "expanded" : "summary"}>
+                    <div onClick={() => this.toggleExpanded()}>
                     <TimeRangeIcon/>
-                    <div>{this.state.from.getHours() === 0 && this.state.from.getMinutes() === 0 ? this.state.from.toLocaleDateString() : this.state.from.toLocaleDateString() + ' ' + this.state.from.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })}</div>
+                    <div>{this.fromAsString()}</div>
                     <div>-</div>
-                    <div>{this.state.to.getHours() === 0 && this.state.to.getMinutes() === 0 ? this.state.to.toLocaleDateString() : this.state.to.toLocaleDateString() + ' ' + this.state.to.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })}</div>
+                    <div>{this.toAsString()}</div>
+                    </div>
+                    <RefreshIcon className={this.state.to instanceof Date ? "disabled" : ""} onClick={() => {
+                        if (!(this.state.to instanceof Date)) {
+                            this.toDate!.value = this.toAsDate().toISOString().split('T')[0]
+                            this.toTime!.value = this.toAsDate().toLocaleTimeString()
+                            this.props.onRangeChanged(this.state.from, this.state.to);
+                        }
+                    }}/>
                 </div>
                 <div ref={(it) => this.rangeSelect = it} className="select" style={{'display': this.state.expanded ? 'block' : 'none'}}>
                     <label>From:</label>
@@ -61,8 +90,8 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
                     </div>
                     <label>To:</label>
                     <div className="input">
-                        <input type="date" ref={(it) => this.toDate = it} defaultValue={this.state.to.toISOString().split('T')[0]}/>
-                        <input type="time" ref={(it) => this.toTime = it} defaultValue={this.state.to.toLocaleTimeString()}/>
+                        <input type="date" ref={(it) => this.toDate = it} defaultValue={this.toAsDate().toISOString().split('T')[0]}/>
+                        <input type="time" ref={(it) => this.toTime = it} defaultValue={this.toAsDate().toLocaleTimeString()}/>
                     </div>
                     <button onClick={() => this.onCustomRangeApplied()}>Apply</button>
                     <hr/>
@@ -86,8 +115,8 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
         if (expanded) {
             this.fromDate!.value = this.state.from.toISOString().split('T')[0];
             this.fromTime!.value = this.state.from.toLocaleTimeString();
-            this.toDate!.value = this.state.to.toISOString().split('T')[0];
-            this.toTime!.value = this.state.to.toLocaleTimeString();
+            this.toDate!.value = this.toAsDate().toISOString().split('T')[0];
+            this.toTime!.value = this.toAsDate().toLocaleTimeString();
         }
         this.setState({expanded: expanded})
     }
@@ -108,7 +137,7 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
         from.setMilliseconds(0);
         from.setSeconds(0);
 
-        let to = new Date();
+        let to: Date | string = new Date();
         to.setMilliseconds(0);
         to.setSeconds(0);
 
@@ -116,6 +145,7 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
             case 'today':
                 from.setMinutes(0);
                 from.setHours(0);
+                to = 'now';
                 break;
 
             case 'yesterday':
@@ -128,6 +158,7 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
                 from.setMinutes(0);
                 from.setHours(0);
                 from.setTime(from.getTime() - (from.getDay() - 1) * 24 * 60 * 60 * 1000);
+                to = 'now';
                 break;
 
             case 'last_week':
@@ -141,6 +172,7 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
                 from.setMinutes(0);
                 from.setHours(0);
                 from.setTime(from.getTime() - (from.getDate() - 1) * 24 * 60 * 60 * 1000);
+                to = 'now';
                 break;
 
             case 'last_month':
@@ -155,6 +187,7 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
                 from.setMinutes(0);
                 from.setHours(0);
                 from.setMonth(0, 1);
+                to = 'now';
                 break;
 
             case 'last_year':
@@ -167,10 +200,12 @@ class DatalogsRangeSelect extends React.Component<DatalogsRangeSelectProperties,
 
             case 'last_60_minutes':
                 from.setTime(to.getTime() - 60 * 60 * 1000);
+                to = 'now';
                 break;
 
             case 'last_24_hours':
                 from.setTime(to.getTime() - 24 * 60 * 60 * 1000);
+                to = 'now';
                 break;
         }
         this.setState({

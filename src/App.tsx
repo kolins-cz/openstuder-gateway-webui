@@ -51,7 +51,7 @@ type AppState = {
 
 class App extends SIGatewayParentComponent<AppProperties, AppState> {
     static defaultProps = {
-        host: window.location.hostname,
+        host: "192.168.1.22", // TODO: window.location.hostname,
         port: 1987,
         debug: false
     };

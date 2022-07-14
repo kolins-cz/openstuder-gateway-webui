@@ -599,7 +599,7 @@ div.datalogs {
     padding: 55px 16px 16px;
 }
 
-div.datalogs div.time-range {
+div.datalogs div.refresh {
     position: fixed;
     z-index: 5;
     top: 0;
@@ -609,12 +609,23 @@ div.datalogs div.time-range {
     background-color: transparent;
 }
 
+div.datalogs div.time-range {
+    position: fixed;
+    z-index: 5;
+    top: 0;
+    right: 0;
+    margin: 0 0 8px 8px;
+    color: rgb(var(--background));
+    background-color: transparent;
+    cursor: default;
+}
+
 div.datalogs div.time-range div.summary {
     display: flex;
     padding: 8px;
     align-items: center;
     color: rgb(var(--accent));
-    background-color: rgb(var(--background));
+    background-color: transparent;
     --icon-color: var(--accent);
 }
 
@@ -624,6 +635,12 @@ div.datalogs div.time-range div.expanded {
     align-items: center;
     background-color: rgb(var(--accent));
     --icon-color: var(--background);
+}
+
+div.datalogs div.time-range div.expanded div,
+div.datalogs div.time-range div.summary div {
+    display: flex;
+    align-items: center;
 }
 
 div.datalogs div.time-range div.summary div,
@@ -676,6 +693,10 @@ div.datalogs div.time-range div.select label {
     text-align: left;
     padding: 2px;
     margin-top: 8px;
+}
+
+div.datalogs div.time-range svg.disabled {
+    opacity: 0.25;
 }
 
 div.datalogs .chart {
@@ -739,6 +760,63 @@ div.datalogs div.delete-chart {
     top: 8px;
     right: 8px;
 }
+
+div.datalogs label.checkbox-container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    height: 25px;
+    cursor: pointer;
+    user-select: none;
+    text-align: left;
+}
+
+
+div.datalogs label.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+div.datalogs span.checkbox-mark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: rgb(var(--background));
+    border-radius: 12px;
+}
+
+div.datalogs span.checkbox-mark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+div.datalogs input:checked ~ span.checkbox-mark:after {
+    display: block;
+}
+
+div.datalogs input:checked ~ span.checkbox-mark {
+    background-color: rgb(var(--accent));
+}
+
+div.datalogs span.checkbox-mark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid rgb(var(--background));
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
 
 /*
  * Messages component.
