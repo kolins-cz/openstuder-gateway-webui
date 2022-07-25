@@ -1,0 +1,32 @@
+name: Distribution
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  package-raspberry:
+    name: Package for latest Raspberry Pi OS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 17.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 17.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build static website for Debian package
+        run: |
+          export NODE_OPTIONS=--openssl-legacy-provider
+          npm run package
+
+      - name: Create Debian package
+        env:
+          VERSION: ${{github.ref_name}}
+        run: |
+          dpkg-deb --build openstuder-web
+          mv openstuder-web openstuder-web-${VERSION}.deb

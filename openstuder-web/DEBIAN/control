@@ -6,4 +6,4 @@ Maintainer: michel.clausen@hevs.ch
 Package: openstuder-web
 Priority: optional
 Section: web
-Version: 0.1
+Version: 0.2.0

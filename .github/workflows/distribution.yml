@@ -10,18 +10,23 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
+
       - name: Use Node.js 17.x
         uses: actions/setup-node@v1
         with:
           node-version: 17.x
+
       - name: Install dependencies
         run: npm install
+
       - name: Build static website
         run: |
           export NODE_OPTIONS=--openssl-legacy-provider
           npm run build
+
       - name: Create archive
         run: tar -C build -cvjSf openstuder-gateway-webui.tar.bz2 .
+
       - name: Create release
         uses: actions/create-release@v1
         id: create_release
@@ -32,6 +37,7 @@ jobs:
           prerelease: false
           release_name: Release ${{ github.ref }}
           tag_name: ${{ github.ref }}
+
       - name: Upload
         uses: actions/upload-release-asset@v1
         env:
