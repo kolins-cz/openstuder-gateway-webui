@@ -1,0 +1,9 @@
+Architecture: all
+Recommends: lighttpd | nginx | apache2 | httpd
+Description: openstuder web UI React application
+Homepage: http://openstuder.github.io
+Maintainer: michel.clausen@hevs.ch
+Package: openstuder-web
+Priority: optional
+Section: web
+Version: 0.1

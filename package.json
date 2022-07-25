@@ -2,6 +2,7 @@
   "name": "openstuder-web",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@openstuder/openstuder": "^0.4.0",
     "@testing-library/jest-dom": "^5.11.10",
@@ -22,7 +23,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && mkdir -p openstuder-web/var/www && mv build openstuder-web/var/www/html",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
