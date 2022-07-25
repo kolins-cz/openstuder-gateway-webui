@@ -29,4 +29,36 @@ jobs:
           VERSION: ${{github.ref_name}}
         run: |
           dpkg-deb --build openstuder-web
-          mv openstuder-web openstuder-web-${VERSION}.deb
+          mv openstuder-web.deb openstuder-web-${VERSION}.deb
+
+      - name: Clone package repository
+        uses: actions/checkout@v2
+        with:
+          repository: openstuder/ppa
+          path: ppa
+          ssh-key: '${{ secrets.PPA_GIT_PKEY }}'
+
+      - name: Copy package into package repository
+        run: cp *.deb ppa/
+
+      - name: Update package index
+        env:
+          PPA_SIGN_EMAIL: '${{ secrets.PPA_SIGN_EMAIL }}'
+          PPA_SIGN_KEY: '${{ secrets.PPA_SIGN_KEY }}'
+        run: |
+          cd ppa
+          echo -e "$PPA_SIGN_KEY" | gpg --import
+          dpkg-scanpackages --multiversion . > Packages
+          gzip -k -f Packages
+          apt-ftparchive release . > Release
+          gpg --default-key "${PPA_SIGN_EMAIL}" -abs -o - Release > Release.gpg
+          gpg --default-key "${PPA_SIGN_EMAIL}" --clearsign -o - Release > InRelease
+
+      - name: Update PPA
+        run: |
+          cd ppa
+          git config user.name ppa
+          git config user.email ppa@www.openstuder.io
+          git add -A
+          git commit -m "Updated package index"
+          git push origin
