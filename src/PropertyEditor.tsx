@@ -192,11 +192,11 @@ class PropertyEditor extends SIGatewayComponent<PropertyEditorProperties, {}> {
                         <ReadAllIcon/>
                     </div>
                     <div className="collapse" onClick={(event) => this.toggleCollapse(event.currentTarget as HTMLDivElement, document.getElementById(id + '-table')! as HTMLTableElement)}>
-                        <CollapseIcon className="collapse"/>
-                        <ExpandIcon className="expand" style={{display: "none"}}/>
+                        <CollapseIcon className="collapse" style={{display: "none"}}/>
+                        <ExpandIcon className="expand" style={{display: "block"}}/>
                     </div>
                 </header>
-                <table id={id + '-table'}>
+                <table id={id + '-table'} style={{display: "none"}}>
                     <tbody>
                         {device.properties
                             .sort((lhs, rhs) =>

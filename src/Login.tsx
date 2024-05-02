@@ -30,9 +30,9 @@ class Login extends SIGatewayComponent<LoginProperties, {}> {
                         <label>THEME</label>
                         <ThemeChooser/>
                         <label>USERNAME</label>
-                        <input ref={this.username} type="text" placeholder="guest"/>
+                        <input ref={this.username} type="text" defaultValue="admin" placeholder="guest"/>
                         <label>PASSWORD</label>
-                        <input ref={this.password} type="password" placeholder="guest" onKeyPress={(event) => {
+                        <input ref={this.password} type="password" defaultValue="admin" placeholder="guest" onKeyPress={(event) => {
                             if (event.key === 'Enter') this.login();
                         }}/>
                         <button ref={this.button} onClick={this.login}>Login</button>
